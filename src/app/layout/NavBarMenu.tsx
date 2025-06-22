@@ -4,13 +4,13 @@ import {
   ListItemIcon,
   ListItemText,
   Menu,
-  MenuItem,
-} from "@mui/material";
-import { useState } from "react";
-import { History, Logout, Redeem } from "@mui/icons-material";
-import { useLogoutMutation } from "../../features/account/accountApi";
-import { Link } from "react-router";
-import navStyles from "./navStyles";
+  MenuItem
+} from '@mui/material';
+import { useState } from 'react';
+import { History, Logout, Redeem } from '@mui/icons-material';
+import { useLogoutMutation } from '../../features/auth/authApi';
+import { Link } from 'react-router';
+import navStyles from './navStyles';
 
 export default function NavBarMenu() {
   const [logout] = useLogoutMutation();
@@ -38,7 +38,7 @@ export default function NavBarMenu() {
   return (
     <div>
       <Button onClick={handleClick} color="inherit" size="large" sx={navStyles}>
-        {"Management"}
+        {'Management'}
       </Button>
       <Menu
         id="basic-menu"
@@ -47,7 +47,7 @@ export default function NavBarMenu() {
         onClose={handleClose}
         // This component renders a menu that appears when the user clicks the button.
         MenuListProps={{
-          "aria-labelledby": "basic-button",
+          'aria-labelledby': 'basic-button'
         }}
       >
         <MenuItem component={Link} to="/coupons">

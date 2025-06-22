@@ -1,8 +1,10 @@
-export type User = {
+export interface UserDto {
+  id: string;
   email: string;
-  roles: string[];
-};
-
+  name: string;
+  phoneNumber: string;
+  role: string;
+}
 export type Address = {
   name: string;
   line1: string;

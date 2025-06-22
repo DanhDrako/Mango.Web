@@ -1,4 +1,4 @@
-import { DarkMode, LightMode, ShoppingCart } from "@mui/icons-material";
+import { DarkMode, LightMode, ShoppingCart } from '@mui/icons-material';
 import {
   AppBar,
   Badge,
@@ -8,26 +8,26 @@ import {
   List,
   ListItem,
   Toolbar,
-  Typography,
-} from "@mui/material";
-import { Link, NavLink } from "react-router";
-import { useAppDispatch, useAppSelector } from "../store/store";
-import { setDarkMode } from "./uiSlice";
-import { useFetchBasketQuery } from "../../features/basket/basketApi";
-import UserMenu from "./UserMenu";
-import { useUserInfoQuery } from "../../features/account/accountApi";
-import NavBarMenu from "./NavBarMenu";
-import navStyles from "./navStyles";
+  Typography
+} from '@mui/material';
+import { Link, NavLink } from 'react-router';
+import { useAppDispatch, useAppSelector } from '../store/store';
+import { setDarkMode } from './uiSlice';
+import { useFetchBasketQuery } from '../../features/basket/basketApi';
+import UserMenu from './UserMenu';
+import { useUserInfoQuery } from '../../features/auth/authApi';
+import NavBarMenu from './NavBarMenu';
+import navStyles from './navStyles';
 
 const midLinks = [
-  { title: "Catalog", path: "/catalog" },
-  { title: "About", path: "/about" },
-  { title: "Contact", path: "/contact" },
+  { title: 'Catalog', path: '/catalog' },
+  { title: 'About', path: '/about' },
+  { title: 'Contact', path: '/contact' }
 ];
 
 const rightLinks = [
-  { title: "Login", path: "/login" },
-  { title: "Register", path: "/register" },
+  { title: 'Login', path: '/login' },
+  { title: 'Register', path: '/register' }
 ];
 
 export default function NavBar() {
@@ -43,9 +43,9 @@ export default function NavBar() {
     <AppBar position="fixed">
       <Toolbar
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
         }}
       >
         <Box display="flex" alignItems="center">
@@ -53,11 +53,11 @@ export default function NavBar() {
             Re-store
           </Typography>
           <IconButton onClick={() => dispatch(setDarkMode())}>
-            {darkMode ? <DarkMode /> : <LightMode sx={{ color: "yellow" }} />}
+            {darkMode ? <DarkMode /> : <LightMode sx={{ color: 'yellow' }} />}
           </IconButton>
         </Box>
 
-        <List sx={{ display: "flex" }}>
+        <List sx={{ display: 'flex' }}>
           {midLinks.map(({ title, path }) => (
             <ListItem component={NavLink} to={path} key={path} sx={navStyles}>
               {title.toUpperCase()}
@@ -71,17 +71,17 @@ export default function NavBar() {
             component={Link}
             to="/basket"
             size="large"
-            sx={{ color: "inherit" }}
+            sx={{ color: 'inherit' }}
           >
             <Badge badgeContent={itemCount} color="secondary">
               <ShoppingCart />
             </Badge>
           </IconButton>
 
-          {user ? (
-            <UserMenu user={user} />
+          {user?.result ? (
+            <UserMenu user={user.result} />
           ) : (
-            <List sx={{ display: "flex" }}>
+            <List sx={{ display: 'flex' }}>
               {rightLinks.map(({ title, path }) => (
                 <ListItem
                   component={NavLink}
@@ -97,7 +97,7 @@ export default function NavBar() {
         </Box>
       </Toolbar>
       {isLoading && (
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ width: '100%' }}>
           <LinearProgress color="secondary" />
         </Box>
       )}

@@ -6,7 +6,7 @@ import { uiSlice } from '../layout/uiSlice';
 import { errorApi } from '../../features/about/errorApi';
 import { basketApi } from '../../features/basket/basketApi';
 import { catalogSlice } from '../../features/catalog/catalogSlice';
-import { accountApi } from '../../features/account/accountApi';
+import { authApi } from '../../features/auth/authApi';
 import { checkoutApi } from '../../features/checkout/checkoutApi';
 import { orderApi } from '../../features/order/orderApi';
 import { adminApi } from '../../features/admin/adminApi';
@@ -17,7 +17,7 @@ export const store = configureStore({
     [catalogApi.reducerPath]: catalogApi.reducer,
     [errorApi.reducerPath]: errorApi.reducer,
     [basketApi.reducerPath]: basketApi.reducer,
-    [accountApi.reducerPath]: accountApi.reducer,
+    [authApi.reducerPath]: authApi.reducer,
     [checkoutApi.reducerPath]: checkoutApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
     [adminApi.reducerPath]: adminApi.reducer,
@@ -31,7 +31,7 @@ export const store = configureStore({
       catalogApi.middleware,
       errorApi.middleware,
       basketApi.middleware,
-      accountApi.middleware,
+      authApi.middleware,
       checkoutApi.middleware,
       orderApi.middleware,
       adminApi.middleware,

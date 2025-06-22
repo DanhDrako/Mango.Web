@@ -20,7 +20,7 @@ import Review from './Review';
 import {
   useFetchAddressQuery,
   useUpdateAddressMutation
-} from '../account/accountApi';
+} from '../auth/authApi';
 import type {
   ConfirmationToken,
   StripeAddressElementChangeEvent,

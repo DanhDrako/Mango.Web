@@ -4,16 +4,17 @@ import {
   ListItemIcon,
   ListItemText,
   Menu,
-  MenuItem,
-} from "@mui/material";
-import { useState } from "react";
-import type { User } from "../models/user";
-import { History, Inventory, Logout, Person } from "@mui/icons-material";
-import { useLogoutMutation } from "../../features/account/accountApi";
-import { Link } from "react-router";
+  MenuItem
+} from '@mui/material';
+import { useState } from 'react';
+import type { UserDto } from '../models/auth/userDto';
+import { History, Inventory, Logout, Person } from '@mui/icons-material';
+import { useLogoutMutation } from '../../features/auth/authApi';
+import { Link } from 'react-router';
+import SD from '../../common/utils/keys/SD';
 
 type Props = {
-  user: User;
+  user: UserDto;
 };
 
 export default function UserMenu({ user }: Props) {
@@ -45,7 +46,7 @@ export default function UserMenu({ user }: Props) {
         onClick={handleClick}
         color="inherit"
         size="large"
-        sx={{ fontSize: "1.1rem" }}
+        sx={{ fontSize: '1.1rem' }}
       >
         {user.email}
       </Button>
@@ -56,7 +57,7 @@ export default function UserMenu({ user }: Props) {
         onClose={handleClose}
         // This component renders a menu that appears when the user clicks the button.
         MenuListProps={{
-          "aria-labelledby": "basic-button",
+          'aria-labelledby': 'basic-button'
         }}
       >
         <MenuItem>
@@ -71,7 +72,7 @@ export default function UserMenu({ user }: Props) {
           </ListItemIcon>
           <ListItemText>My orders</ListItemText>
         </MenuItem>
-        {user.roles.includes("Admin") && (
+        {user.role === SD.RolesUser.ADMIN && (
           <MenuItem component={Link} to="/inventory">
             <ListItemIcon>
               <Inventory />

@@ -1,47 +1,43 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithErrorHandling } from '../../app/api/baseApi';
-import type { Address, User } from '../../app/models/user';
+import type { Address, UserDto } from '../../app/models/auth/userDto';
 import type { LoginSchema } from '../../lib/schemas/loginSchema';
 import { router } from '../../app/routes/Routes';
 import { toast } from 'react-toastify';
 import Apis from '../../app/api/Apis';
+import type { ResponseDto } from '../../app/models/responseDto';
+import type { LoginResponseDto } from '../../app/models/auth/loginResponseDto';
+import type { RegisterSchema } from '../../lib/schemas/registerSchema';
+import TokenProvider from '../../app/service/TokenProvider';
 
-export const accountApi = createApi({
-  // Define a unique name for the API slice
-  reducerPath: 'accountApi',
-  // Specify the base query function to use for API requests
-  baseQuery: baseQueryWithErrorHandling(Apis.URL_BASE.MAIN),
-  // Define the types of tags that this API will use
+export const authApi = createApi({
+  reducerPath: 'authApi',
+  baseQuery: baseQueryWithErrorHandling(Apis.URL_BASE.AUTH),
   tagTypes: ['UserInfo'],
-  // Define the API endpoints
   endpoints: (builder) => ({
-    // Define a mutation for logging in
-    login: builder.mutation<void, LoginSchema>({
-      // Specify the query function for the login mutation
+    login: builder.mutation<ResponseDto<LoginResponseDto>, LoginSchema>({
       query: (creds) => {
         return {
-          url: 'login?useCookies=true',
-          method: 'POST',
+          url: Apis.API_TAILER.AUTH + '/login',
+          method: Apis.API_TYPE.POST,
           body: creds
         };
       },
-      // Specify the tags to invalidate when this mutation is successful
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
-          // Wait for the login mutation to complete
           await queryFulfilled;
-          // Invalidate the user info cache to refresh it after login
-          dispatch(accountApi.util.invalidateTags(['UserInfo']));
+          dispatch(authApi.util.invalidateTags(['UserInfo']));
         } catch (error) {
           console.log(error);
+          throw error; // Re-throw the error to be handled by the base query error handling
         }
       }
     }),
-    register: builder.mutation<void, object>({
+    register: builder.mutation<ResponseDto<object>, RegisterSchema>({
       query: (creds) => {
         return {
-          url: 'account/register',
-          method: 'POST',
+          url: Apis.API_TAILER.AUTH + '/register',
+          method: Apis.API_TYPE.POST,
           body: creds
         };
       },
@@ -56,20 +52,28 @@ export const accountApi = createApi({
         }
       }
     }),
-    userInfo: builder.query<User, void>({
-      query: () => 'account/user-info',
+    assignRole: builder.mutation<ResponseDto<object>, RegisterSchema>({
+      query: (creds) => ({
+        url: Apis.API_TAILER.AUTH + '/AssignRole',
+        method: Apis.API_TYPE.POST,
+        body: creds
+      })
+    }),
+    userInfo: builder.query<ResponseDto<UserDto>, void>({
+      query: () => Apis.API_TAILER.AUTH + '/user-info',
       // Specify the tags to cache this query
       // This will allow us to invalidate this query when the user logs in or out
       providesTags: ['UserInfo']
     }),
     logout: builder.mutation({
       query: () => ({
-        url: 'account/logout',
-        method: 'POST'
+        url: Apis.API_TAILER.AUTH + '/logout',
+        method: Apis.API_TYPE.POST
       }),
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         await queryFulfilled;
-        dispatch(accountApi.util.invalidateTags(['UserInfo']));
+        TokenProvider.clearToken();
+        dispatch(authApi.util.invalidateTags(['UserInfo']));
         router.navigate('/');
       }
     }),
@@ -84,13 +88,9 @@ export const accountApi = createApi({
       }),
       onQueryStarted: async (address, { dispatch, queryFulfilled }) => {
         const patchResult = dispatch(
-          accountApi.util.updateQueryData(
-            'fetchAddress',
-            undefined,
-            (draft) => {
-              Object.assign(draft, { ...address });
-            }
-          )
+          authApi.util.updateQueryData('fetchAddress', undefined, (draft) => {
+            Object.assign(draft, { ...address });
+          })
         );
         try {
           await queryFulfilled;
@@ -110,5 +110,6 @@ export const {
   useLazyUserInfoQuery,
   useLogoutMutation,
   useFetchAddressQuery,
-  useUpdateAddressMutation
-} = accountApi;
+  useUpdateAddressMutation,
+  useAssignRoleMutation
+} = authApi;

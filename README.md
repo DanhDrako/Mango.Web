@@ -21,6 +21,7 @@
 -- npm i @mui/lab
 -- npm i js-cookie
 -- npm i -D @types/js-cookie
+-- npm i jwt-decode
 -- npm i --save @stripe/react-stripe-js @stripe/stripe-js
 -- brew i stripe/stripe-cli/stripe
 ```

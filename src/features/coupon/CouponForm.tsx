@@ -42,9 +42,8 @@ export default function CouponForm({
 
   const onSubmit = async (data: CreateCouponSchema) => {
     try {
-      if (coupon)
-        await updateCoupon({ couponId: coupon.couponId, ...data }).unwrap();
-      else await createCoupon(data).unwrap();
+      if (coupon) await updateCoupon({ couponId: coupon.couponId, ...data });
+      else await createCoupon(data);
       setEditMode(false);
       setSelectedCoupon(null);
     } catch (error) {

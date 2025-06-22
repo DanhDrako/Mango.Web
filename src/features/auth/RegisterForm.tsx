@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useRegisterMutation } from './accountApi';
+import { useAssignRoleMutation, useRegisterMutation } from './authApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   registerSchema,
@@ -15,10 +15,15 @@ import {
   Button
 } from '@mui/material';
 import { Link } from 'react-router';
+import AppSelectInput from '../../app/shared/components/AppSelectInput';
+import type { ResponseDto } from '../../app/models/responseDto';
+import SD from '../../common/utils/keys/SD';
 
 export default function RegisterForm() {
   const [registerUser] = useRegisterMutation();
+  const [assignRoleUser] = useAssignRoleMutation();
   const {
+    control,
     register,
     handleSubmit,
     setError,
@@ -31,16 +36,17 @@ export default function RegisterForm() {
   const onSubmit = async (data: RegisterSchema) => {
     try {
       await registerUser(data).unwrap();
+      await assignRoleUser(data).unwrap();
     } catch (error) {
-      const apiError = error as { message: string };
-      if (apiError.message && typeof apiError.message === 'string') {
-        const errorArray = apiError.message.split(',');
+      const res = error as { data: ResponseDto<object> };
+      if (res.data.message && typeof res.data.message === 'string') {
+        const errorArray = res.data.message.split(',');
 
-        errorArray.forEach((e) => {
+        errorArray.forEach((e: string) => {
           if (e.includes('Password')) {
             setError('password', { message: e });
-          } else if (e.includes('Email')) {
-            setError('email', { message: e });
+          } else if (e.includes('Username')) {
+            setError('email', { message: e.replace('Username', 'Email') });
           }
         });
       }
@@ -75,11 +81,31 @@ export default function RegisterForm() {
           />
           <TextField
             fullWidth
+            label="Name"
+            {...register('name')}
+            error={!!errors.name}
+            helperText={errors.name ? errors.name.message : ''}
+          />
+          <TextField
+            fullWidth
+            label="Phone Number"
+            {...register('phoneNumber')}
+            error={!!errors.phoneNumber}
+            helperText={errors.phoneNumber ? errors.phoneNumber.message : ''}
+          />
+          <TextField
+            fullWidth
             label="Password"
             type="password"
             {...register('password')}
             error={!!errors.password}
             helperText={errors.password ? errors.password.message : ''}
+          />
+          <AppSelectInput
+            items={Object.values(SD.RolesUser)}
+            control={control}
+            name="role"
+            label="Role"
           />
           <Button
             disabled={isLoading || !isValid}

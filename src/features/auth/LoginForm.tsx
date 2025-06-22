@@ -11,11 +11,11 @@ import { Link, useLocation, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { loginSchema, type LoginSchema } from '../../lib/schemas/loginSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useLazyUserInfoQuery, useLoginMutation } from './accountApi';
+import { useLoginMutation } from './authApi';
+import TokenProvider from '../../app/service/TokenProvider';
 
 export default function LoginForm() {
   const [login, { isLoading }] = useLoginMutation();
-  const [fetchUserInfo] = useLazyUserInfoQuery();
   const location = useLocation();
   const {
     register,
@@ -30,12 +30,17 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginSchema) => {
     // Attempt to log in with the provided credentials
-    await login(data);
-    // If login is successful, fetch user info
-    // This will also trigger the user info cache to be updated
-    await fetchUserInfo();
-    // After successful login, redirect to the previous page or default to '/catalog'
-    navigate(location.state?.from || '/catalog');
+
+    const res = await login(data).unwrap();
+    if (res.isSuccess) {
+      const token = res.result.token;
+      TokenProvider.setToken(token);
+
+      // Decode the JWT token to get user information
+      //const decodedToken: JwtPayload = jwtDecode(token);
+
+      navigate(location.state?.from || '/catalog');
+    }
   };
 
   return (
