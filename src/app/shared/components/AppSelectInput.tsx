@@ -24,7 +24,11 @@ export default function AppSelectInput<T extends FieldValues>(props: Props<T>) {
   return (
     <FormControl fullWidth error={!!fieldState.error}>
       <InputLabel>{props.label}</InputLabel>
-      <Select value={field.value} label={props.label} onChange={field.onChange}>
+      <Select
+        value={field.value || ''}
+        label={props.label}
+        onChange={field.onChange}
+      >
         {props.items.map((item, index) => (
           <MenuItem value={item} key={index}>
             {item}

@@ -105,7 +105,7 @@ export default function OrderDetailedPage() {
                 <TableCell sx={{ py: 4 }}>
                   <Box display="flex" gap={3} alignItems="center">
                     <img
-                      src={item.pictureUrl}
+                      src={item.imageUrl}
                       alt={item.name}
                       style={{ width: 40, height: 40 }}
                     />

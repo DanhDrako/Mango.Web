@@ -44,11 +44,11 @@ export const createProductSchema = z
     quantityInStock: z.coerce
       .number({ required_error: 'Quantity is required' })
       .min(1, 'Quantity must be at least 1'),
-    pictureUrl: z.string().optional(),
+    imageUrl: z.string().optional(),
     file: fileSchema.optional()
   })
-  .refine((data) => data.file || data.pictureUrl, {
-    message: 'Either a file or pictureUrl must be provided',
+  .refine((data) => data.file || data.imageUrl, {
+    message: 'Either a file or imageUrl must be provided',
     path: ['file']
   });
 

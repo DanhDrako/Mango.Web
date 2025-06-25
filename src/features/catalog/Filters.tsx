@@ -4,6 +4,7 @@ import RadioButtonGroup from '../../app/shared/components/RadioButtonGroup';
 import { useAppDispatch, useAppSelector } from '../../app/store/store';
 import { resetParam, setBrands, setOrderBy, setTypes } from './catalogSlice';
 import CheckboxButtons from '../../app/shared/components/CheckboxButtons';
+import type { Filter } from '../../app/models/filter';
 
 const sortOptions = [
   { value: 'name', label: 'Alphabetical' },
@@ -12,10 +13,7 @@ const sortOptions = [
 ];
 
 type Props = {
-  filtersData: {
-    brands: string[];
-    types: string[];
-  };
+  filtersData: Filter;
 };
 
 export default function Filters({ filtersData: data }: Props) {

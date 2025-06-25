@@ -9,12 +9,13 @@ const Apis = {
   URL_BASE: {
     MAIN: import.meta.env.VITE_API_URL,
     COUPON: import.meta.env.VITE_COUPON_API_URL,
-    AUTH: import.meta.env.VITE_AUTH_API_URL
+    AUTH: import.meta.env.VITE_AUTH_API_URL,
+    PRODUCT: import.meta.env.VITE_PRODUCT_API_URL
   },
   API_TAILER: {
     COUPON: '/coupon',
     AUTH: '/auth',
-    PRODUCTS: '/products',
+    PRODUCT: '/product',
     BASKET: '/basket',
     ACCOUNT: '/account',
     ORDERS: '/orders',

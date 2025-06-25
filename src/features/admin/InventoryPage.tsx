@@ -43,6 +43,9 @@ export default function InventoryPage() {
     }
   };
 
+  if (!data || !data.response || data.response.result.length === 0)
+    return <Typography variant="h5">No products available</Typography>;
+
   if (editMode)
     return (
       <ProductForm
@@ -82,18 +85,18 @@ export default function InventoryPage() {
           </TableHead>
           <TableBody>
             {data &&
-              data.items.map((product) => (
+              data.response.result.map((product) => (
                 <TableRow
-                  key={product.id}
+                  key={product.productId}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    {product.id}
+                    {product.productId}
                   </TableCell>
                   <TableCell align="left">
                     <Box display="flex" alignItems="center">
                       <img
-                        src={product.pictureUrl}
+                        src={product.imageUrl}
                         alt={product.name}
                         style={{ height: 50, marginRight: 20 }}
                       />
@@ -114,7 +117,7 @@ export default function InventoryPage() {
                       startIcon={<Edit />}
                     />
                     <Button
-                      onClick={() => handleDeleteProduct(product.id)}
+                      onClick={() => handleDeleteProduct(product.productId)}
                       startIcon={<Delete />}
                       color="error"
                     />
@@ -124,7 +127,7 @@ export default function InventoryPage() {
           </TableBody>
         </Table>
         <Box sx={{ p: 3 }}>
-          {data?.pagination && data.items.length > 0 && (
+          {data?.pagination && data.response.result.length > 0 && (
             <AppPagination
               metadata={data.pagination}
               onPageChange={(page: number) => dispatch(setPageNumber(page))}

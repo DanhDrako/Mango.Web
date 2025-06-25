@@ -30,7 +30,7 @@ export default function ProductCard({ product }: Props) {
     >
       <CardMedia
         sx={{ height: 240, backgroundSize: 'cover' }}
-        image={product.pictureUrl}
+        image={product.imageUrl}
         title={product.name}
       />
       <CardContent>
@@ -52,7 +52,7 @@ export default function ProductCard({ product }: Props) {
         >
           Add to cart
         </Button>
-        <Button component={Link} to={`/catalog/${product.id}`}>
+        <Button component={Link} to={`/catalog/${product.productId}`}>
           View
         </Button>
       </CardActions>

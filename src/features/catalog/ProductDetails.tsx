@@ -1,6 +1,5 @@
 import { useParams } from 'react-router';
 import {
-  Button,
   Divider,
   Grid,
   Table,
@@ -12,45 +11,43 @@ import {
   Typography
 } from '@mui/material';
 import { useFetchProductDetailsQuery } from './catalogApi';
-import {
-  useAddBasketItemMutation,
-  useFetchBasketQuery,
-  useRemoveBasketItemMutation
-} from '../basket/basketApi';
-import { useEffect, useState, type ChangeEvent } from 'react';
+
+import { useState, type ChangeEvent } from 'react';
+import type { Product } from '../../app/models/product';
 
 export default function ProductDetails() {
   const { id } = useParams();
-  const [removeBasketItem] = useRemoveBasketItemMutation();
-  const [addBasketItem] = useAddBasketItemMutation();
-  const { data: basket } = useFetchBasketQuery();
-  const item = basket?.items.find((item) => item.productId === +id!);
+  // const [removeBasketItem] = useRemoveBasketItemMutation();
+  // const [addBasketItem] = useAddBasketItemMutation();
+  // const { data: basket } = useFetchBasketQuery();
+  // const item = basket?.items.find((item) => item.productId === +id!);
   const [quantity, setQuantity] = useState(0);
 
-  useEffect(() => {
-    if (item) setQuantity(item.quantity);
-  }, [item]);
+  // useEffect(() => {
+  //   if (item) setQuantity(item.quantity);
+  // }, [item]);
 
-  const {
-    data: product,
-    isLoading,
-    error
-  } = useFetchProductDetailsQuery(id ? +id : 0);
+  const { data: response, isLoading } = useFetchProductDetailsQuery(
+    id ? +id : 0
+  );
 
-  if (!product || isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading product</div>;
+  if (!response?.isSuccess || isLoading) return <div>Loading...</div>;
+  const product: Product = response.result;
 
-  const handleUpdateBasket = () => {
-    const updatedQuantity = item
-      ? Math.abs(quantity - item.quantity)
-      : quantity;
+  // const handleUpdateBasket = () => {
+  //   const updatedQuantity = item
+  //     ? Math.abs(quantity - item.quantity)
+  //     : quantity;
 
-    if (!item || quantity > item.quantity) {
-      addBasketItem({ product, quantity: updatedQuantity });
-    } else {
-      removeBasketItem({ productId: product.id, quantity: updatedQuantity });
-    }
-  };
+  //   if (!item || quantity > item.quantity) {
+  //     addBasketItem({ product, quantity: updatedQuantity });
+  //   } else {
+  //     removeBasketItem({
+  //       productId: product.productId,
+  //       quantity: updatedQuantity
+  //     });
+  //   }
+  // };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = +event.currentTarget.value;
@@ -70,7 +67,7 @@ export default function ProductDetails() {
     <Grid container spacing={6} maxWidth="lg" sx={{ mx: 'auto' }}>
       <Grid size={6}>
         <img
-          src={product.pictureUrl}
+          src={product.imageUrl}
           alt={product.name}
           style={{ width: '100%' }}
         />
@@ -106,7 +103,7 @@ export default function ProductDetails() {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid size={6}>
+          {/* <Grid size={6}>
             <Button
               onClick={handleUpdateBasket}
               disabled={
@@ -120,7 +117,7 @@ export default function ProductDetails() {
             >
               {item ? 'Update basket' : 'Add to basket'}
             </Button>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
     </Grid>

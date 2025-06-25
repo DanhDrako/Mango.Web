@@ -5,34 +5,36 @@ import type { ProductParams } from '../../app/models/productParams';
 import { filterEmptyValues } from '../../lib/util';
 import type { Pagination } from '../../app/models/pagination';
 import Apis from '../../app/api/Apis';
+import type { ResponseDto } from '../../app/models/responseDto';
+import type { Filter } from '../../app/models/filter';
 
 export const catalogApi = createApi({
   reducerPath: 'catalogApi',
-  baseQuery: baseQueryWithErrorHandling(Apis.URL_BASE.MAIN),
+  baseQuery: baseQueryWithErrorHandling(Apis.URL_BASE.PRODUCT),
   endpoints: (build) => ({
     fetchProducts: build.query<
-      { items: Product[]; pagination: Pagination },
+      { response: ResponseDto<Product[]>; pagination: Pagination },
       ProductParams
     >({
       query: (productParams) => {
         return {
-          url: 'products',
+          url: Apis.API_TAILER.PRODUCT,
           params: filterEmptyValues(productParams)
         };
       },
-      transformResponse: (items: Product[], meta) => {
+      transformResponse: (response: ResponseDto<Product[]>, meta) => {
         const paginationHeader = meta?.response?.headers.get('Pagination');
         const pagination = paginationHeader
           ? JSON.parse(paginationHeader)
           : null;
-        return { items, pagination };
+        return { response, pagination };
       }
     }),
-    fetchProductDetails: build.query<Product, number>({
-      query: (id) => `products/${id}`
+    fetchProductDetails: build.query<ResponseDto<Product>, number>({
+      query: (id) => `${Apis.API_TAILER.PRODUCT}/${id}`
     }),
-    fetchFilters: build.query<{ brands: string[]; types: string[] }, void>({
-      query: () => 'products/filters'
+    fetchFilters: build.query<ResponseDto<Filter>, void>({
+      query: () => `${Apis.API_TAILER.PRODUCT}/filters`
     })
   })
 });

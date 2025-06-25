@@ -2,18 +2,18 @@ import { Navigate, Outlet, useLocation } from 'react-router';
 import { useUserInfoQuery } from '../../features/auth/authApi';
 
 export default function RequireAuth() {
-  const { data: user, isLoading } = useUserInfoQuery();
+  const { data, isLoading } = useUserInfoQuery();
   const location = useLocation();
 
   if (isLoading) return <div>Loading...</div>;
 
-  if (!user) return <Navigate to="/login" state={{ from: location }} />;
+  if (!data) return <Navigate to="/login" state={{ from: location }} />;
 
   const adminRoutes = ['/inventory', '/admin-dashboard'];
 
   if (
     adminRoutes.includes(location.pathname) &&
-    !user.roles.includes('Admin')
+    !data.result.role.includes('ADMIN')
   ) {
     return <Navigate to="/" replace />;
   }

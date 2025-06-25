@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import { useCreateProductMutation, useUpdateProductMutation } from './adminApi';
 import { LoadingButton } from '@mui/lab';
 import { handleApiError } from '../../lib/util';
+import type { Filter } from '../../app/models/filter';
 
 type Props = {
   setEditMode: (value: boolean) => void;
@@ -40,17 +41,31 @@ export default function ProductForm({
     resolver: zodResolver(createProductSchema)
   });
   const watchFile = watch('file');
-  const { data } = useFetchFiltersQuery();
+  const { data: filter } = useFetchFiltersQuery();
   const [createProduct] = useCreateProductMutation();
   const [updateProduct] = useUpdateProductMutation();
 
   useEffect(() => {
-    if (product) reset(product);
+    if (product) {
+      reset({
+        ...product,
+        file: watchFile // preserve the dropped file if present
+      });
+    }
 
     return () => {
       if (watchFile) URL.revokeObjectURL(watchFile.preview);
     };
   }, [product, reset, watchFile]);
+
+  if (!filter || !filter.isSuccess) {
+    return <div>Loading filters...</div>;
+  }
+
+  if (!filter.result) {
+    return <div>No filter data available</div>;
+  }
+  const data: Filter = filter.result;
 
   const createFormData = (items: FieldValues) => {
     const formData = new FormData();
@@ -65,10 +80,15 @@ export default function ProductForm({
       const formData = createFormData(data);
 
       // if (watchFile) formData.append('file', watchFile);
+
+      // Add the file to the form data if it exists
       if (watchFile) formData.append('file', watchFile as unknown as File);
 
       if (product)
-        await updateProduct({ id: product.id, data: formData }).unwrap();
+        await updateProduct({
+          productId: product.productId,
+          data: formData
+        }).unwrap();
       else await createProduct(formData).unwrap();
       setEditMode(false);
       setSelectedProduct(null);
@@ -82,7 +102,7 @@ export default function ProductForm({
         'type',
         'brand',
         'quantityInStock',
-        'pictureUrl',
+        'imageUrl',
         'file'
       ]);
     }
@@ -98,7 +118,7 @@ export default function ProductForm({
             <AppTextInput control={control} name="name" label="Product name" />
           </Grid>
           <Grid size={6}>
-            {data?.brands && (
+            {data && data.brands && (
               <AppSelectInput
                 items={data.brands}
                 control={control}
@@ -108,7 +128,7 @@ export default function ProductForm({
             )}
           </Grid>
           <Grid size={6}>
-            {data?.types && (
+            {data && data.types && (
               <AppSelectInput
                 items={data.types}
                 control={control}
@@ -155,9 +175,9 @@ export default function ProductForm({
                 alt="preview of image"
                 style={{ maxHeight: 200 }}
               />
-            ) : product?.pictureUrl ? (
+            ) : product?.imageUrl ? (
               <img
-                src={product?.pictureUrl}
+                src={product?.imageUrl}
                 alt="image of product"
                 style={{ maxHeight: 200 }}
               />

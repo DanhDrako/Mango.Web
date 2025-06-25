@@ -29,7 +29,7 @@ export default function BasketItem({ item }: Props) {
       <Box display="flex" alignItems="center">
         <Box
           component="img"
-          src={item.pictureUrl}
+          src={item.imageUrl}
           alt={item.name}
           sx={{
             width: 100,

@@ -5,22 +5,25 @@ import Apis from '../../app/api/Apis';
 
 export const adminApi = createApi({
   reducerPath: 'adminApi',
-  baseQuery: baseQueryWithErrorHandling(Apis.URL_BASE.MAIN),
+  baseQuery: baseQueryWithErrorHandling(Apis.URL_BASE.PRODUCT),
   endpoints: (builder) => ({
     createProduct: builder.mutation<Product, FormData>({
       query: (data: FormData) => {
         return {
-          url: 'products',
+          url: Apis.API_TAILER.PRODUCT,
           method: 'POST',
           body: data
         };
       }
     }),
-    updateProduct: builder.mutation<void, { id: number; data: FormData }>({
-      query: ({ id, data }) => {
-        data.append('id', id.toString());
+    updateProduct: builder.mutation<
+      void,
+      { productId: number; data: FormData }
+    >({
+      query: ({ productId, data }) => {
+        data.append('productId', productId.toString());
         return {
-          url: 'products',
+          url: Apis.API_TAILER.PRODUCT,
           method: 'PUT',
           body: data
         };
@@ -29,7 +32,7 @@ export const adminApi = createApi({
     deleteProduct: builder.mutation<void, number>({
       query: (id) => {
         return {
-          url: `products/${id}`,
+          url: `${Apis.API_TAILER.PRODUCT}/${id}`,
           method: 'DELETE'
         };
       }

@@ -25,12 +25,9 @@ export default function Coupon() {
   if (isLoading)
     return <Typography variant="h5">Loading coupons...</Typography>;
 
-  if (!coupons?.isSuccess)
-    return <Typography variant="h5">No coupons available</Typography>;
+  if (!coupons?.isSuccess) return <Typography variant="h5">Error</Typography>;
 
-  const listCoupons: Coupon[] = Object.assign(coupons.result);
-  if (!listCoupons || listCoupons.length === 0)
-    return <Typography variant="h5">No coupons available</Typography>;
+  const listCoupons: Coupon[] = coupons.result;
 
   const handleSelectCoupon = (coupon: Coupon) => {
     setSelectedCoupon(coupon);
