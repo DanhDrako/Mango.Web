@@ -7,7 +7,7 @@ import ProductDetails from '../../features/catalog/ProductDetails';
 import Catalog from '../../features/catalog/Catalog';
 import ServerError from '../errors/ServerError';
 import NotFound from '../errors/NotFound';
-import BasketPage from '../../features/basket/BasketPage';
+import CartPage from '../../features/cart/CartPage';
 import CheckoutPage from '../../features/checkout/CheckoutPage';
 import LoginForm from '../../features/auth/LoginForm';
 import RegisterForm from '../../features/auth/RegisterForm';
@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
       { path: 'catalog/:id', element: <ProductDetails /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'contact', element: <ContactPage /> },
-      { path: 'basket', element: <BasketPage /> },
+      { path: 'cart', element: <CartPage /> },
       { path: 'coupons', element: <Coupons /> },
       { path: 'coupon/:id', element: <CouponDetailedPage /> },
       { path: 'login', element: <LoginForm /> },

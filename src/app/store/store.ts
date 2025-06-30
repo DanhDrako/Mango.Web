@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { catalogApi } from '../../features/catalog/catalogApi';
 import { uiSlice } from '../layout/uiSlice';
 import { errorApi } from '../../features/about/errorApi';
-import { basketApi } from '../../features/basket/basketApi';
+import { cartApi } from '../../features/cart/cartApi';
 import { catalogSlice } from '../../features/catalog/catalogSlice';
 import { authApi } from '../../features/auth/authApi';
 import { checkoutApi } from '../../features/checkout/checkoutApi';
@@ -16,7 +16,7 @@ export const store = configureStore({
   reducer: {
     [catalogApi.reducerPath]: catalogApi.reducer,
     [errorApi.reducerPath]: errorApi.reducer,
-    [basketApi.reducerPath]: basketApi.reducer,
+    [cartApi.reducerPath]: cartApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [checkoutApi.reducerPath]: checkoutApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
@@ -30,7 +30,7 @@ export const store = configureStore({
     getDefaultMiddleware().concat(
       catalogApi.middleware,
       errorApi.middleware,
-      basketApi.middleware,
+      cartApi.middleware,
       authApi.middleware,
       checkoutApi.middleware,
       orderApi.middleware,

@@ -1,9 +1,9 @@
 import { Grid } from '@mui/material';
-import type { Product } from '../../app/models/product';
+import type { ProductDto } from '../../app/models/productDto';
 import ProductCard from './ProductCard';
 
 type Props = {
-  products: Product[];
+  products: ProductDto[];
 };
 
 export default function ProductList({ products }: Props) {

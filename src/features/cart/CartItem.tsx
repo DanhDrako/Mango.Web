@@ -1,19 +1,41 @@
 import { Box, Grid, IconButton, Paper, Typography } from '@mui/material';
-import type { Item } from '../../app/models/basket';
 import { Add, Close, Remove } from '@mui/icons-material';
-import {
-  useAddBasketItemMutation,
-  useRemoveBasketItemMutation
-} from './basketApi';
 import { currencyFormat } from '../../lib/util';
+import { useAddCartItemMutation, useRemoveCartItemMutation } from './cartApi';
+import type { CartDetailsDto } from '../../app/models/cart/cartDetailsDto';
+import type { InputCartDto } from '../../app/models/cart/inputCartDto';
 
 type Props = {
-  item: Item;
+  userId: string;
+  item: CartDetailsDto;
 };
 
-export default function BasketItem({ item }: Props) {
-  const [addBasketItem] = useAddBasketItemMutation();
-  const [removeBasketItem] = useRemoveBasketItemMutation();
+export default function CartItem({ userId, item }: Props) {
+  const [addCartItem] = useAddCartItemMutation();
+  const [removeCartItem] = useRemoveCartItemMutation();
+
+  if (!item.product) {
+    return (
+      <Paper
+        sx={{
+          height: 140,
+          borderRadius: 3,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          mb: 2
+        }}
+      >
+        <Typography variant="h6">Product not found</Typography>
+      </Paper>
+    );
+  }
+
+  const inputCartDto: InputCartDto = {
+    userId,
+    product: item.product,
+    quantity: 1
+  };
 
   return (
     <Paper
@@ -29,8 +51,8 @@ export default function BasketItem({ item }: Props) {
       <Box display="flex" alignItems="center">
         <Box
           component="img"
-          src={item.imageUrl}
-          alt={item.name}
+          src={item.product.imageUrl}
+          alt={item.product.name}
           sx={{
             width: 100,
             height: 100,
@@ -41,22 +63,20 @@ export default function BasketItem({ item }: Props) {
           }}
         />
         <Box display="flex" flexDirection="column" gap={1}>
-          <Typography variant="h6">{item.name}</Typography>
+          <Typography variant="h6">{item.product.name}</Typography>
 
           <Box display="flex" alignItems="center" gap={3}>
             <Typography sx={{ fontSize: '1.1rem' }}>
-              {currencyFormat(item.price)} x {item.quantity}
+              {currencyFormat(item.product.price)} x {item.quantity}
             </Typography>
             <Typography sx={{ fontSize: '1.1rem' }} color="primary">
-              {currencyFormat(item.price * item.quantity)}
+              {currencyFormat(item.product.price * item.quantity)}
             </Typography>
           </Box>
 
           <Grid container spacing={1} alignItems="center">
             <IconButton
-              onClick={() =>
-                removeBasketItem({ productId: item.productId, quantity: 1 })
-              }
+              onClick={() => removeCartItem(inputCartDto)}
               color="error"
               size="small"
               sx={{ border: 1, borderRadius: 1, minWidth: 0 }}
@@ -65,7 +85,7 @@ export default function BasketItem({ item }: Props) {
             </IconButton>
             <Typography variant="h6">{item.quantity}</Typography>
             <IconButton
-              onClick={() => addBasketItem({ product: item, quantity: 1 })}
+              onClick={() => addCartItem(inputCartDto)}
               color="success"
               size="small"
               sx={{ border: 1, borderRadius: 1, minWidth: 0 }}
@@ -78,8 +98,8 @@ export default function BasketItem({ item }: Props) {
 
       <IconButton
         onClick={() =>
-          removeBasketItem({
-            productId: item.productId,
+          removeCartItem({
+            ...inputCartDto,
             quantity: item.quantity
           })
         }

@@ -13,6 +13,7 @@ import { loginSchema, type LoginSchema } from '../../lib/schemas/loginSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLoginMutation } from './authApi';
 import TokenProvider from '../../app/service/TokenProvider';
+import { useEffect } from 'react';
 
 export default function LoginForm() {
   const [login, { isLoading }] = useLoginMutation();
@@ -27,6 +28,14 @@ export default function LoginForm() {
   });
 
   const navigate = useNavigate();
+
+  // Check for token and redirect if present
+  useEffect(() => {
+    const token = TokenProvider.getToken();
+    if (token) {
+      navigate('/catalog', { replace: true });
+    }
+  }, [navigate]);
 
   const onSubmit = async (data: LoginSchema) => {
     // Attempt to log in with the provided credentials

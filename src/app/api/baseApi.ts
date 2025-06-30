@@ -47,6 +47,8 @@ export const baseQueryWithErrorHandling =
           break;
         case 401:
           toast.error('401 Unauthorized');
+          router.navigate('/login');
+
           break;
         case 403:
           toast.error('403 Forbidden');

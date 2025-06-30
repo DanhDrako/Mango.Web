@@ -1,13 +1,13 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithErrorHandling } from '../../app/api/baseApi';
-import type { Product } from '../../app/models/product';
+import type { ProductDto } from '../../app/models/productDto';
 import Apis from '../../app/api/Apis';
 
 export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: baseQueryWithErrorHandling(Apis.URL_BASE.PRODUCT),
   endpoints: (builder) => ({
-    createProduct: builder.mutation<Product, FormData>({
+    createProduct: builder.mutation<ProductDto, FormData>({
       query: (data: FormData) => {
         return {
           url: Apis.API_TAILER.PRODUCT,

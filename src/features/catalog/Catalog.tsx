@@ -4,9 +4,7 @@ import { useFetchFiltersQuery, useFetchProductsQuery } from './catalogApi';
 import { useAppDispatch, useAppSelector } from '../../app/store/store';
 import AppPagination from '../../app/shared/components/AppPagination';
 import { setPageNumber } from './catalogSlice';
-import type { Product } from '../../app/models/product';
 import Filters from './Filters';
-import type { Filter } from '../../app/models/filter';
 
 export default function Catalog() {
   const productParams = useAppSelector((state) => state.catalog);
@@ -21,8 +19,8 @@ export default function Catalog() {
   if (!product?.response.isSuccess || !filter.isSuccess)
     return <div>Loading...</div>;
 
-  const listProducts: Product[] = product.response.result;
-  const filtersData: Filter = filter.result;
+  const { result: listProducts } = product.response;
+  const { result: filtersData } = filter;
 
   return (
     <Grid container spacing={4}>

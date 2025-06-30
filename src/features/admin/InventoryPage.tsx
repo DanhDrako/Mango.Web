@@ -18,7 +18,7 @@ import AppPagination from '../../app/shared/components/AppPagination';
 import { setPageNumber } from '../catalog/catalogSlice';
 import ProductForm from './ProductForm';
 import { useState } from 'react';
-import type { Product } from '../../app/models/product';
+import type { ProductDto } from '../../app/models/productDto';
 import { useDeleteProductMutation } from './adminApi';
 
 export default function InventoryPage() {
@@ -26,10 +26,12 @@ export default function InventoryPage() {
   const { data, refetch } = useFetchProductsQuery(productParams);
   const dispatch = useAppDispatch();
   const [editMode, setEditMode] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductDto | null>(
+    null
+  );
   const [deleteProduct] = useDeleteProductMutation();
 
-  const handleSelectProduct = (product: Product) => {
+  const handleSelectProduct = (product: ProductDto) => {
     setSelectedProduct(product);
     setEditMode(true);
   };

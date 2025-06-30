@@ -8,10 +8,10 @@ import {
 } from '@mui/material';
 import { currencyFormat } from '../../../lib/util';
 import { Link, useLocation } from 'react-router';
-import { useBasket } from '../../../lib/hook/useBasket';
+import { useCart } from '../../../lib/hook/useCart';
 
 export default function OrderSummary() {
-  const { deliveryFee, subtotal } = useBasket();
+  const { deliveryFee, subtotal } = useCart();
   const location = useLocation();
 
   return (

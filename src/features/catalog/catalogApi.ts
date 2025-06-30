@@ -1,5 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import type { Product } from '../../app/models/product';
+import type { ProductDto } from '../../app/models/productDto';
 import { baseQueryWithErrorHandling } from '../../app/api/baseApi';
 import type { ProductParams } from '../../app/models/productParams';
 import { filterEmptyValues } from '../../lib/util';
@@ -13,7 +13,7 @@ export const catalogApi = createApi({
   baseQuery: baseQueryWithErrorHandling(Apis.URL_BASE.PRODUCT),
   endpoints: (build) => ({
     fetchProducts: build.query<
-      { response: ResponseDto<Product[]>; pagination: Pagination },
+      { response: ResponseDto<ProductDto[]>; pagination: Pagination },
       ProductParams
     >({
       query: (productParams) => {
@@ -22,7 +22,7 @@ export const catalogApi = createApi({
           params: filterEmptyValues(productParams)
         };
       },
-      transformResponse: (response: ResponseDto<Product[]>, meta) => {
+      transformResponse: (response: ResponseDto<ProductDto[]>, meta) => {
         const paginationHeader = meta?.response?.headers.get('Pagination');
         const pagination = paginationHeader
           ? JSON.parse(paginationHeader)
@@ -30,7 +30,7 @@ export const catalogApi = createApi({
         return { response, pagination };
       }
     }),
-    fetchProductDetails: build.query<ResponseDto<Product>, number>({
+    fetchProductDetails: build.query<ResponseDto<ProductDto>, number>({
       query: (id) => `${Apis.API_TAILER.PRODUCT}/${id}`
     }),
     fetchFilters: build.query<ResponseDto<Filter>, void>({

@@ -8,16 +8,25 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import { useFetchBasketQuery } from '../basket/basketApi';
 import { currencyFormat } from '../../lib/util';
 import type { ConfirmationToken } from '@stripe/stripe-js';
+import { useCart } from '../../lib/hook/useCart';
 
 type Props = {
   confirmationToken: ConfirmationToken | null;
 };
 
 export default function Review({ confirmationToken }: Props) {
-  const { data: basket } = useFetchBasketQuery();
+  const { cart } = useCart();
+
+  if (!cart || !cart.cartDetails) {
+    return (
+      <Typography variant="h6" color="error">
+        No products in the cart.
+      </Typography>
+    );
+  }
+
   const addressString = () => {
     if (!confirmationToken?.shipping) return '';
     const { name, address } = confirmationToken.shipping;
@@ -59,29 +68,31 @@ export default function Review({ confirmationToken }: Props) {
         <TableContainer>
           <Table>
             <TableBody>
-              {basket?.items.map((item) => (
-                <TableRow
-                  key={item.productId}
-                  sx={{ borderBottom: '1px solid rgba(244, 244, 244, 1)' }}
-                >
-                  <TableCell sx={{ py: 4 }}>
-                    <Box display="flex" gap={3} alignItems="center">
-                      <img
-                        src={item.imageUrl}
-                        alt={item.name}
-                        style={{ width: 40, height: 40 }}
-                      />
-                      <Typography>{item.name}</Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell align="center" sx={{ p: 4 }}>
-                    x {item.quantity}
-                  </TableCell>
-                  <TableCell align="right" sx={{ p: 4 }}>
-                    {currencyFormat(item.price)}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {cart.cartDetails.map((item) =>
+                item.product ? (
+                  <TableRow
+                    key={item.productId}
+                    sx={{ borderBottom: '1px solid rgba(244, 244, 244, 1)' }}
+                  >
+                    <TableCell sx={{ py: 4 }}>
+                      <Box display="flex" gap={3} alignItems="center">
+                        <img
+                          src={item.product.imageUrl}
+                          alt={item.product.name}
+                          style={{ width: 40, height: 40 }}
+                        />
+                        <Typography>{item.product.name}</Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell align="center" sx={{ p: 4 }}>
+                      x {item.quantity}
+                    </TableCell>
+                    <TableCell align="right" sx={{ p: 4 }}>
+                      {currencyFormat(item.product.price)}
+                    </TableCell>
+                  </TableRow>
+                ) : null
+              )}
             </TableBody>
           </Table>
         </TableContainer>

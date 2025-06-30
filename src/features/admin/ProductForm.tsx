@@ -9,7 +9,7 @@ import AppTextInput from '../../app/shared/components/AppTextInput';
 import { useFetchFiltersQuery } from '../catalog/catalogApi';
 import AppSelectInput from '../../app/shared/components/AppSelectInput';
 import AppDropzone from '../../app/shared/components/AppDropzone';
-import type { Product } from '../../app/models/product';
+import type { ProductDto } from '../../app/models/productDto';
 import { useEffect } from 'react';
 import { useCreateProductMutation, useUpdateProductMutation } from './adminApi';
 import { LoadingButton } from '@mui/lab';
@@ -18,9 +18,9 @@ import type { Filter } from '../../app/models/filter';
 
 type Props = {
   setEditMode: (value: boolean) => void;
-  product: Product | null;
+  product: ProductDto | null;
   refetch: () => void;
-  setSelectedProduct: (product: Product | null) => void;
+  setSelectedProduct: (product: ProductDto | null) => void;
 };
 
 export default function ProductForm({
@@ -35,11 +35,12 @@ export default function ProductForm({
     watch,
     reset,
     setError,
-    formState: { isSubmitting }
+    formState: { isSubmitting, errors }
   } = useForm<CreateProductSchema>({
     mode: 'onTouched',
     resolver: zodResolver(createProductSchema)
   });
+  console.log('Form errors:', errors);
   const watchFile = watch('file');
   const { data: filter } = useFetchFiltersQuery();
   const [createProduct] = useCreateProductMutation();
@@ -76,6 +77,7 @@ export default function ProductForm({
   };
 
   const onSubmit = async (data: CreateProductSchema) => {
+    console.log('Submitting product:', data);
     try {
       const formData = createFormData(data);
 
