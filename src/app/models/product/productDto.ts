@@ -4,7 +4,7 @@ export type ProductDto = {
   description: string;
   price: number;
   imageUrl: string;
-  type: string;
-  brand: string;
   quantityInStock: number;
+  categoryId: number;
+  brandId: number;
 };

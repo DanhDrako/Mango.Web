@@ -39,8 +39,8 @@ export const createProductSchema = z
     price: z.coerce
       .number({ required_error: 'Price is required' })
       .min(100, 'Price must be at least $1.00'),
-    type: z.string({ required_error: 'Type is required' }),
-    brand: z.string({ required_error: 'Brand is required' }),
+    categoryId: z.number({ required_error: 'Category is required' }),
+    brandId: z.number({ required_error: 'Brand is required' }),
     quantityInStock: z.coerce
       .number({ required_error: 'Quantity is required' })
       .min(1, 'Quantity must be at least 1'),

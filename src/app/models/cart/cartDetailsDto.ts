@@ -1,4 +1,4 @@
-import type { ProductDto } from '../productDto';
+import type { ProductDto } from '../product/productDto';
 import type { CartHeaderDto } from './cartHeaderDto';
 
 export interface CartDetailsDto {

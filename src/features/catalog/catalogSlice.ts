@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { ProductParams } from '../../app/models/productParams';
+import type { ProductParams } from '../../app/models/product/productParams';
 
 // This slice manages the state for product parameters in the catalog feature
 // It includes pagination, sorting, searching, and filtering options
@@ -11,7 +11,7 @@ const initialState: ProductParams = {
   orderBy: 'name',
   searchTerm: '',
   brands: [],
-  types: []
+  categories: []
 };
 
 // The catalogSlice is created using createSlice from Redux Toolkit
@@ -40,9 +40,9 @@ export const catalogSlice = createSlice({
       state.brands = action.payload;
       state.pageNumber = 1; // Reset page number when brands change
     },
-    setTypes: (state, action) => {
-      state.types = action.payload;
-      state.pageNumber = 1; // Reset page number when types change
+    setCategories: (state, action) => {
+      state.categories = action.payload;
+      state.pageNumber = 1; // Reset page number when categories change
     },
     resetParam() {
       return initialState; // Reset to initial state
@@ -56,6 +56,6 @@ export const {
   setOrderBy,
   setSearchTerm,
   setBrands,
-  setTypes,
+  setCategories,
   resetParam
 } = catalogSlice.actions; // Export actions for use in components

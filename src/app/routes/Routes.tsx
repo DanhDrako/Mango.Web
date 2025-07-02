@@ -15,9 +15,11 @@ import RequireAuth from './RequireAuth';
 import CheckoutSuccess from '../../features/checkout/CheckoutSuccess';
 import OrdersPage from '../../features/order/OrdersPage';
 import OrderDetailedPage from '../../features/order/OrderDetailedPage';
-import InventoryPage from '../../features/admin/InventoryPage';
-import Coupons from '../../features/coupon/CouponsPage';
-import CouponDetailedPage from '../../features/coupon/CouponDetailedPage';
+import InventoryPage from '../../features/admin/product/InventoryPage';
+import Coupons from '../../features/admin/coupon/CouponsPage';
+import CouponDetailedPage from '../../features/admin/coupon/CouponDetailedPage';
+import Categories from '../../features/admin/category/CategoriesPage';
+import Brands from '../../features/admin/brand/BrandsPage';
 
 export const router = createBrowserRouter([
   {
@@ -27,11 +29,16 @@ export const router = createBrowserRouter([
       {
         element: <RequireAuth />,
         children: [
+          { path: 'cart', element: <CartPage /> },
           { path: 'checkout', element: <CheckoutPage /> },
           { path: 'checkout/success', element: <CheckoutSuccess /> },
           { path: 'orders', element: <OrdersPage /> },
           { path: 'orders/:id', element: <OrderDetailedPage /> },
-          { path: 'inventory', element: <InventoryPage /> }
+          { path: 'inventory', element: <InventoryPage /> },
+          { path: 'coupons', element: <Coupons /> },
+          { path: 'coupon/:id', element: <CouponDetailedPage /> },
+          { path: 'categories', element: <Categories /> },
+          { path: 'brands', element: <Brands /> }
         ]
       },
       { path: '', element: <HomePage /> },
@@ -39,9 +46,6 @@ export const router = createBrowserRouter([
       { path: 'catalog/:id', element: <ProductDetails /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'contact', element: <ContactPage /> },
-      { path: 'cart', element: <CartPage /> },
-      { path: 'coupons', element: <Coupons /> },
-      { path: 'coupon/:id', element: <CouponDetailedPage /> },
       { path: 'login', element: <LoginForm /> },
       { path: 'register', element: <RegisterForm /> },
       { path: 'server-error', element: <ServerError /> },

@@ -10,27 +10,33 @@ import {
   Box,
   TableContainer
 } from '@mui/material';
-import { useDeleteCouponMutation, useFetchCouponsQuery } from './couponApi';
-import type { Coupon } from '../../app/models/coupon';
+import {
+  useDeleteCategoryMutation,
+  useFetchCategoriesQuery
+} from './categoryApi';
 import { useState } from 'react';
-import CouponForm from './CouponForm';
 import { Delete, Edit } from '@mui/icons-material';
+import type { Category } from '../../../app/models/product/filter/category';
+import CategoryForm from './CategoryForm';
 
-export default function Coupon() {
-  const { data: coupons, isLoading } = useFetchCouponsQuery();
+export default function Categories() {
+  const { data: categories, isLoading } = useFetchCategoriesQuery();
   const [editMode, setEditMode] = useState(false);
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
-  const [deleteCoupon] = useDeleteCouponMutation();
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+  const [deleteCoupon] = useDeleteCategoryMutation();
 
   if (isLoading)
-    return <Typography variant="h5">Loading coupons...</Typography>;
+    return <Typography variant="h5">Loading categories...</Typography>;
 
-  if (!coupons?.isSuccess) return <Typography variant="h5">Error</Typography>;
+  if (!categories?.isSuccess)
+    return <Typography variant="h5">Error</Typography>;
 
-  const listCoupons: Coupon[] = coupons.result;
+  const listCategories: Category[] = categories.result;
 
-  const handleSelectCoupon = (coupon: Coupon) => {
-    setSelectedCoupon(coupon);
+  const handleSelectCategory = (category: Category) => {
+    setSelectedCategory(category);
     setEditMode(true);
   };
 
@@ -38,16 +44,16 @@ export default function Coupon() {
     try {
       await deleteCoupon(id);
     } catch (error) {
-      console.log('Error deleting coupon:', error);
+      console.log('Error deleting category:', error);
     }
   };
 
   if (editMode) {
     return (
-      <CouponForm
+      <CategoryForm
         setEditMode={setEditMode}
-        coupon={selectedCoupon}
-        setSelectedCoupon={setSelectedCoupon}
+        category={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
       />
     );
   }
@@ -56,50 +62,46 @@ export default function Coupon() {
     <>
       <Box display="flex" justifyContent="space-between">
         <Typography sx={{ p: 2 }} variant="h4">
-          Coupons List
+          Categories List
         </Typography>
         <Button
           onClick={() => {
-            setSelectedCoupon(null);
+            setSelectedCategory(null);
             setEditMode(true);
           }}
           sx={{ m: 2 }}
           size="large"
           variant="contained"
         >
-          Create new coupon
+          Create new category
         </Button>
       </Box>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell align="left">CouponId</TableCell>
-              <TableCell>CouponCode</TableCell>
-              <TableCell>DiscountAmount</TableCell>
-              <TableCell>MinAmount</TableCell>
+              <TableCell align="left">CategoryId</TableCell>
+              <TableCell>Name</TableCell>
               <TableCell align="right">Command</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {listCoupons.map((coupon) => (
+            {listCategories.map((category) => (
               <TableRow
-                key={coupon.couponId}
+                key={category.categoryId}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {coupon.couponId}
+                  {category.categoryId}
                 </TableCell>
-                <TableCell>{coupon.couponCode}</TableCell>
-                <TableCell>{coupon.discountAmount}</TableCell>
-                <TableCell>{coupon.minAmount}</TableCell>
+                <TableCell>{category.name}</TableCell>
                 <TableCell align="right">
                   <Button
-                    onClick={() => handleSelectCoupon(coupon)}
+                    onClick={() => handleSelectCategory(category)}
                     startIcon={<Edit />}
                   />
                   <Button
-                    onClick={() => handleDeleteCoupon(coupon.couponId)}
+                    onClick={() => handleDeleteCoupon(category.categoryId)}
                     startIcon={<Delete />}
                     color="error"
                   />

@@ -15,7 +15,7 @@ import {
 type Props<T extends FieldValues> = {
   label: string;
   name: keyof T;
-  items: string[];
+  items: { key: number; label: string }[];
 } & UseControllerProps<T> &
   Partial<SelectProps>;
 
@@ -30,8 +30,8 @@ export default function AppSelectInput<T extends FieldValues>(props: Props<T>) {
         onChange={field.onChange}
       >
         {props.items.map((item, index) => (
-          <MenuItem value={item} key={index}>
-            {item}
+          <MenuItem value={item.label} key={item.key || index}>
+            {item.label}
           </MenuItem>
         ))}
       </Select>

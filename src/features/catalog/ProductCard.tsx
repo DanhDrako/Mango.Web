@@ -6,7 +6,7 @@ import {
   CardMedia,
   Typography
 } from '@mui/material';
-import type { ProductDto } from '../../app/models/productDto';
+import type { ProductDto } from '../../app/models/product/productDto';
 import { Link } from 'react-router';
 import { useAddCartItemMutation } from '../cart/cartApi';
 import { currencyFormat } from '../../lib/util';

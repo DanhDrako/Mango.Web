@@ -17,6 +17,8 @@ const Apis = {
     COUPON: '/coupon',
     AUTH: '/auth',
     PRODUCT: '/product',
+    CATEGORY: '/category',
+    BRAND: '/brand',
     CART: '/cart',
     ACCOUNT: '/account',
     ORDERS: '/orders',

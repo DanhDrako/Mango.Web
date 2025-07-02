@@ -1,15 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
-import AppTextInput from '../../app/shared/components/AppTextInput';
+import AppTextInput from '../../../app/shared/components/AppTextInput';
 import { LoadingButton } from '@mui/lab';
-import { handleApiError } from '../../lib/util';
+import { handleApiError } from '../../../lib/util';
 import { useCreateCouponMutation, useUpdateCouponMutation } from './couponApi';
 import {
   createCouponSchema,
   type CreateCouponSchema
-} from '../../lib/schemas/createCouponSchema';
-import type { Coupon } from '../../app/models/coupon';
+} from '../../../lib/schemas/createCouponSchema';
+import type { Coupon } from '../../../app/models/admin/coupon';
 import { useEffect } from 'react';
 
 type Props = {

@@ -1,31 +1,33 @@
 import { Grid, Typography } from '@mui/material';
 import ProductList from './ProductList';
-import { useFetchFiltersQuery, useFetchProductsQuery } from './catalogApi';
+import { useFetchProductsQuery } from './catalogApi';
 import { useAppDispatch, useAppSelector } from '../../app/store/store';
 import AppPagination from '../../app/shared/components/AppPagination';
 import { setPageNumber } from './catalogSlice';
 import Filters from './Filters';
+import { useProduct } from '../../lib/hook/useProduct';
 
 export default function Catalog() {
   const productParams = useAppSelector((state) => state.catalog);
   const { data: product, isLoading } = useFetchProductsQuery(productParams);
-  const { data: filter, isLoading: filtersLoading } = useFetchFiltersQuery();
+	const {filters} = useProduct();
 
   const dispatch = useAppDispatch();
 
-  if (isLoading || !product || filtersLoading || !filter)
+  if (isLoading || !product || !filters)
     return <div>Loading...</div>;
 
-  if (!product?.response.isSuccess || !filter.isSuccess)
+	const { response } = product;
+
+  if (!response.isSuccess)
     return <div>Loading...</div>;
 
-  const { result: listProducts } = product.response;
-  const { result: filtersData } = filter;
+  const { result: listProducts } = response;
 
   return (
     <Grid container spacing={4}>
       <Grid size={3}>
-        <Filters filtersData={filtersData} />
+        <Filters filtersData={filters} />
       </Grid>
       <Grid size={9}>
         {listProducts && listProducts.length > 0 ? (

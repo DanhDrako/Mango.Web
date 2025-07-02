@@ -1,10 +1,10 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQueryWithErrorHandling } from '../../app/api/baseApi';
-import type { Coupon } from '../../app/models/coupon';
-import type { ResponseDto } from '../../app/models/responseDto';
-import type { CreateCouponSchema } from '../../lib/schemas/createCouponSchema';
+import { baseQueryWithErrorHandling } from '../../../app/api/baseApi';
+import type { Coupon } from '../../../app/models/admin/coupon';
+import type { ResponseDto } from '../../../app/models/responseDto';
+import type { CreateCouponSchema } from '../../../lib/schemas/createCouponSchema';
 import { toast } from 'react-toastify';
-import Apis from '../../app/api/Apis';
+import Apis from '../../../app/api/Apis';
 
 export const couponApi = createApi({
   // Define a unique name for the API slice

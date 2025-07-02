@@ -46,3 +46,32 @@ export function handleApiError<T extends FieldValues>(
     });
   }
 }
+
+export function findFilterName<
+  T extends { categoryId?: number; brandId?: number }
+>(
+  items: T[],
+  targetId: number,
+  idKey: keyof T,
+  nameKey: keyof T = 'name' as keyof T
+): string {
+  const found = items.find((item) => item[idKey] === targetId);
+  return (found?.[nameKey] as string) ?? 'Unknown';
+}
+
+// More specific helper functions for common use cases
+export function findCategoryName(
+  categories: Array<{ categoryId: number; name: string }>,
+  categoryId: number
+): string {
+  return (
+    categories.find((cate) => cate.categoryId === categoryId)?.name ?? 'Unknown'
+  );
+}
+
+export function findBrandName(
+  brands: Array<{ brandId: number; name: string }>,
+  brandId: number
+): string {
+  return brands.find((brand) => brand.brandId === brandId)?.name ?? 'Unknown';
+}

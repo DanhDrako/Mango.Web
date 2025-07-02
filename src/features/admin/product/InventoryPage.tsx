@@ -10,20 +10,26 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '../../app/store/store';
-import { useFetchProductsQuery } from '../catalog/catalogApi';
-import { currencyFormat } from '../../lib/util';
+import { useAppDispatch, useAppSelector } from '../../../app/store/store';
+import { useFetchProductsQuery } from '../../catalog/catalogApi';
+import {
+  currencyFormat,
+  findBrandName,
+  findCategoryName
+} from '../../../lib/util';
 import { Delete, Edit } from '@mui/icons-material';
-import AppPagination from '../../app/shared/components/AppPagination';
-import { setPageNumber } from '../catalog/catalogSlice';
+import AppPagination from '../../../app/shared/components/AppPagination';
+import { setPageNumber } from '../../catalog/catalogSlice';
 import ProductForm from './ProductForm';
 import { useState } from 'react';
-import type { ProductDto } from '../../app/models/productDto';
-import { useDeleteProductMutation } from './adminApi';
+import type { ProductDto } from '../../../app/models/product/productDto';
+import { useDeleteProductMutation } from './productApi';
+import { useProduct } from '../../../lib/hook/useProduct';
 
 export default function InventoryPage() {
   const productParams = useAppSelector((state) => state.catalog);
   const { data, refetch } = useFetchProductsQuery(productParams);
+  const { filters } = useProduct();
   const dispatch = useAppDispatch();
   const [editMode, setEditMode] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductDto | null>(
@@ -45,7 +51,13 @@ export default function InventoryPage() {
     }
   };
 
-  if (!data || !data.response || data.response.result.length === 0)
+  if (
+    !data ||
+    !data.response ||
+    data.response.result.length === 0 ||
+    !filters?.brands ||
+    !filters?.categories
+  )
     return <Typography variant="h5">No products available</Typography>;
 
   if (editMode)
@@ -79,7 +91,7 @@ export default function InventoryPage() {
               <TableCell>#</TableCell>
               <TableCell align="left">Product</TableCell>
               <TableCell align="right">Price</TableCell>
-              <TableCell align="center">Type</TableCell>
+              <TableCell align="center">Category</TableCell>
               <TableCell align="center">Brand</TableCell>
               <TableCell align="center">Quantity</TableCell>
               <TableCell align="right">Product</TableCell>
@@ -108,8 +120,12 @@ export default function InventoryPage() {
                   <TableCell align="right">
                     {currencyFormat(product.price)}
                   </TableCell>
-                  <TableCell align="center">{product.type}</TableCell>
-                  <TableCell align="center">{product.brand}</TableCell>
+                  <TableCell align="center">
+                    {findCategoryName(filters.categories, product.categoryId)}
+                  </TableCell>
+                  <TableCell align="center">
+                    {findBrandName(filters.brands, product.brandId)}
+                  </TableCell>
                   <TableCell align="center">
                     {product.quantityInStock}
                   </TableCell>

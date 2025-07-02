@@ -7,7 +7,13 @@ import {
   MenuItem
 } from '@mui/material';
 import { useState } from 'react';
-import { History, Logout, Redeem } from '@mui/icons-material';
+import {
+  History,
+  Logout,
+  Redeem,
+  Category,
+  LogoDev
+} from '@mui/icons-material';
 import { useLogoutMutation } from '../../features/auth/authApi';
 import { Link } from 'react-router';
 import navStyles from './navStyles';
@@ -50,6 +56,18 @@ export default function NavBarMenu() {
           'aria-labelledby': 'basic-button'
         }}
       >
+        <MenuItem component={Link} to="/categories">
+          <ListItemIcon>
+            <Category />
+          </ListItemIcon>
+          <ListItemText>Categories</ListItemText>
+        </MenuItem>
+        <MenuItem component={Link} to="/brands">
+          <ListItemIcon>
+            <LogoDev />
+          </ListItemIcon>
+          <ListItemText>Brands</ListItemText>
+        </MenuItem>
         <MenuItem component={Link} to="/coupons">
           <ListItemIcon>
             <Redeem />

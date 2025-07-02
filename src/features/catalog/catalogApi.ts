@@ -1,12 +1,12 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import type { ProductDto } from '../../app/models/productDto';
+import type { ProductDto } from '../../app/models/product/productDto';
 import { baseQueryWithErrorHandling } from '../../app/api/baseApi';
-import type { ProductParams } from '../../app/models/productParams';
+import type { ProductParams } from '../../app/models/product/productParams';
 import { filterEmptyValues } from '../../lib/util';
 import type { Pagination } from '../../app/models/pagination';
 import Apis from '../../app/api/Apis';
 import type { ResponseDto } from '../../app/models/responseDto';
-import type { Filter } from '../../app/models/filter';
+import type { Filter } from '../../app/models/product/filter';
 
 export const catalogApi = createApi({
   reducerPath: 'catalogApi',

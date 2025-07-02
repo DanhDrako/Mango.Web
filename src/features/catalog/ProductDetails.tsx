@@ -21,10 +21,13 @@ import {
 import { useCart } from '../../lib/hook/useCart';
 import { useInfo } from '../../lib/hook/useInfo';
 import type { InputCartDto } from '../../app/models/cart/inputCartDto';
+import { useProduct } from '../../lib/hook/useProduct';
+import { findBrandName, findCategoryName } from '../../lib/util';
 
 export default function ProductDetails() {
   const { userDto } = useInfo();
   const { cart } = useCart();
+  const { filters } = useProduct();
   const { id } = useParams();
   const [removeCartItem] = useRemoveCartItemMutation();
   const [addCartItem] = useAddCartItemMutation();
@@ -41,13 +44,15 @@ export default function ProductDetails() {
 
   if (!response?.isSuccess || isLoading) return <div>Loading...</div>;
   const { result: product } = response;
-  if (!product) {
+  if (!product || !filters?.brands || !filters?.categories) {
     return (
       <Typography variant="h6" color="error">
         Product not found
       </Typography>
     );
   }
+
+  const { categories, brands } = filters;
 
   const inputCartDto: InputCartDto = {
     userId: userDto?.id ?? '',
@@ -73,11 +78,14 @@ export default function ProductDetails() {
     if (value >= 0) setQuantity(value);
   };
 
+  const productCate = findCategoryName(categories, product.categoryId);
+  const productBrand = findBrandName(brands, product.brandId);
+
   const productDetails = [
     { label: 'Name', value: product.name },
     { label: 'Description', value: product.description },
-    { label: 'Type', value: product.type },
-    { label: 'Brand', value: product.brand },
+    { label: 'Category', value: productCate },
+    { label: 'Brand', value: productBrand },
     { label: 'Quantity in stock', value: product.quantityInStock }
   ];
 

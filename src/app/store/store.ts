@@ -9,8 +9,10 @@ import { catalogSlice } from '../../features/catalog/catalogSlice';
 import { authApi } from '../../features/auth/authApi';
 import { checkoutApi } from '../../features/checkout/checkoutApi';
 import { orderApi } from '../../features/order/orderApi';
-import { adminApi } from '../../features/admin/adminApi';
-import { couponApi } from '../../features/coupon/couponApi';
+import { couponApi } from '../../features/admin/coupon/couponApi';
+import { productApi } from '../../features/admin/product/productApi';
+import { categoryApi } from '../../features/admin/category/categoryApi';
+import { brandApi } from '../../features/admin/brand/brandApi';
 
 export const store = configureStore({
   reducer: {
@@ -20,7 +22,9 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [checkoutApi.reducerPath]: checkoutApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
-    [adminApi.reducerPath]: adminApi.reducer,
+    [productApi.reducerPath]: productApi.reducer,
+    [categoryApi.reducerPath]: categoryApi.reducer,
+    [brandApi.reducerPath]: brandApi.reducer,
     [couponApi.reducerPath]: couponApi.reducer,
     counter: counterSlice.reducer,
     ui: uiSlice.reducer,
@@ -34,8 +38,10 @@ export const store = configureStore({
       authApi.middleware,
       checkoutApi.middleware,
       orderApi.middleware,
-      adminApi.middleware,
-      couponApi.middleware
+      productApi.middleware,
+      couponApi.middleware,
+      categoryApi.middleware,
+      brandApi.middleware
     )
 });
 

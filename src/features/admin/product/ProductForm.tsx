@@ -3,18 +3,20 @@ import { useForm, type FieldValues } from 'react-hook-form';
 import {
   createProductSchema,
   type CreateProductSchema
-} from '../../lib/schemas/createProductSchema';
+} from '../../../lib/schemas/createProductSchema';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
-import AppTextInput from '../../app/shared/components/AppTextInput';
-import { useFetchFiltersQuery } from '../catalog/catalogApi';
-import AppSelectInput from '../../app/shared/components/AppSelectInput';
-import AppDropzone from '../../app/shared/components/AppDropzone';
-import type { ProductDto } from '../../app/models/productDto';
+import AppTextInput from '../../../app/shared/components/AppTextInput';
+import AppSelectInput from '../../../app/shared/components/AppSelectInput';
+import AppDropzone from '../../../app/shared/components/AppDropzone';
+import type { ProductDto } from '../../../app/models/product/productDto';
 import { useEffect } from 'react';
-import { useCreateProductMutation, useUpdateProductMutation } from './adminApi';
+import {
+  useCreateProductMutation,
+  useUpdateProductMutation
+} from './productApi';
 import { LoadingButton } from '@mui/lab';
-import { handleApiError } from '../../lib/util';
-import type { Filter } from '../../app/models/filter';
+import { handleApiError } from '../../../lib/util';
+import { useProduct } from '../../../lib/hook/useProduct';
 
 type Props = {
   setEditMode: (value: boolean) => void;
@@ -42,9 +44,9 @@ export default function ProductForm({
   });
   console.log('Form errors:', errors);
   const watchFile = watch('file');
-  const { data: filter } = useFetchFiltersQuery();
   const [createProduct] = useCreateProductMutation();
   const [updateProduct] = useUpdateProductMutation();
+  const { filters } = useProduct();
 
   useEffect(() => {
     if (product) {
@@ -59,14 +61,9 @@ export default function ProductForm({
     };
   }, [product, reset, watchFile]);
 
-  if (!filter || !filter.isSuccess) {
+  if (!filters || !filters?.brands || !filters?.categories) {
     return <div>Loading filters...</div>;
   }
-
-  if (!filter.result) {
-    return <div>No filter data available</div>;
-  }
-  const data: Filter = filter.result;
 
   const createFormData = (items: FieldValues) => {
     const formData = new FormData();
@@ -101,8 +98,8 @@ export default function ProductForm({
         'name',
         'description',
         'price',
-        'type',
-        'brand',
+        'categoryId',
+        'brandId',
         'quantityInStock',
         'imageUrl',
         'file'
@@ -120,25 +117,31 @@ export default function ProductForm({
             <AppTextInput control={control} name="name" label="Product name" />
           </Grid>
           <Grid size={6}>
-            {data && data.brands && (
+            {filters.categories && (
               <AppSelectInput
-                items={data.brands}
+                items={filters.categories.map((category) => ({
+                  key: category.categoryId,
+                  label: category.name
+                }))}
                 control={control}
-                name="brand"
+                name="categoryId"
+                label="Category"
+              />
+            )}
+          </Grid>{' '}
+          <Grid size={6}>
+            {filters.brands && (
+              <AppSelectInput
+                items={filters.brands.map((brand) => ({
+                  key: brand.brandId,
+                  label: brand.name
+                }))}
+                control={control}
+                name="brandId"
                 label="Brand"
               />
             )}
           </Grid>
-          <Grid size={6}>
-            {data && data.types && (
-              <AppSelectInput
-                items={data.types}
-                control={control}
-                name="type"
-                label="Type"
-              />
-            )}
-          </Grid>{' '}
           <Grid size={6}>
             <AppTextInput
               type="number"
