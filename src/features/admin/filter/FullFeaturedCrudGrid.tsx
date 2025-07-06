@@ -1,10 +1,5 @@
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Close';
 import {
   type GridRowsProp,
   type GridRowModesModel,
@@ -23,6 +18,7 @@ import {
 } from '@mui/x-data-grid';
 import { useState } from 'react';
 import { Grid, Typography } from '@mui/material';
+import { Add, Cancel, Delete, Edit, Save } from '@mui/icons-material';
 
 declare module '@mui/x-data-grid' {
   interface ToolbarPropsOverrides {
@@ -67,7 +63,7 @@ function EditToolbar(props: GridSlotProps['toolbar']) {
         <Grid>
           <Tooltip title="Add record">
             <ToolbarButton onClick={handleClick}>
-              <AddIcon fontSize="small" />
+              <Add fontSize="small" />
               <Typography variant="button" sx={{ ml: 1 }}>
                 Add new
               </Typography>
@@ -141,12 +137,12 @@ export default function FullFeaturedCrudGrid<T extends GridValidRowModel>({
   };
 
   const columns: GridColDef[] = [
-    { field: 'name', headerName: 'Name', width: 180, editable: true },
+    { field: 'name', headerName: 'Name', flex: 1, editable: true },
     {
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',
-      width: 100,
+      width: 140,
       cellClassName: 'actions',
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
@@ -154,7 +150,7 @@ export default function FullFeaturedCrudGrid<T extends GridValidRowModel>({
         if (isInEditMode) {
           return [
             <GridActionsCellItem
-              icon={<SaveIcon />}
+              icon={<Save />}
               label="Save"
               material={{
                 sx: {
@@ -164,28 +160,38 @@ export default function FullFeaturedCrudGrid<T extends GridValidRowModel>({
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
-              icon={<CancelIcon />}
+              icon={<Cancel />}
               label="Cancel"
-              className="textPrimary"
               onClick={handleCancelClick(id)}
-              color="inherit"
+              material={{
+                sx: {
+                  color: 'error.main'
+                }
+              }}
             />
           ];
         }
 
         return [
           <GridActionsCellItem
-            icon={<EditIcon />}
+            icon={<Edit />}
             label="Edit"
-            className="textPrimary"
             onClick={handleEditClick(id)}
-            color="inherit"
+            material={{
+              sx: {
+                color: 'primary.main'
+              }
+            }}
           />,
           <GridActionsCellItem
-            icon={<DeleteIcon />}
+            icon={<Delete />}
             label="Delete"
             onClick={handleDeleteClick(id)}
-            color="inherit"
+            material={{
+              sx: {
+                color: 'error.main'
+              }
+            }}
           />
         ];
       }
