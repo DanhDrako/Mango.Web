@@ -26,7 +26,7 @@ import type {
   StripeAddressElementChangeEvent,
   StripePaymentElementChangeEvent
 } from '@stripe/stripe-js';
-import { useBasket } from '../../lib/hook/useBasket';
+import { useCart } from '../../lib/hook/useCart';
 import { currencyFormat } from '../../lib/util';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
@@ -37,7 +37,7 @@ const steps = ['Shipping Address', 'Payment Method', 'Review Order'];
 export default function CheckoutStepper() {
   const [activeStep, setActiveStep] = useState(0);
   const [createOrder] = useCreateOrderMutation();
-  const { basket } = useBasket();
+  // const { cartDto } = useCart();
   const { data, isLoading } = useFetchAddressQuery();
 
   const [updateAddress] = useUpdateAddressMutation();
@@ -47,7 +47,7 @@ export default function CheckoutStepper() {
   const [addressComplete, setAddressComplete] = useState(false);
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const { total, clearBasket } = useBasket();
+  const { total, clearBasket } = useCart();
   const navigate = useNavigate();
   const [confirmationToken, setConfirmationToken] =
     useState<ConfirmationToken | null>(null);
@@ -81,14 +81,13 @@ export default function CheckoutStepper() {
   const confirmPayment = async () => {
     setSubmitting(true);
     try {
-      if (!confirmationToken || !basket?.clientSecret)
-        throw new Error('Unable to process payment');
+      if (!confirmationToken) throw new Error('Unable to process payment');
 
       const orderModel = await createOrderModel();
       const orderResult = await createOrder(orderModel);
 
       const paymentResult = await stripe?.confirmPayment({
-        clientSecret: basket.clientSecret,
+        clientSecret: '',
         redirect: 'if_required',
         confirmParams: {
           confirmation_token: confirmationToken.id
