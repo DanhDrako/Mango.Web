@@ -101,7 +101,7 @@ export default function InventoryPage() {
               <TableCell align="center">Category</TableCell>
               <TableCell align="center">Brand</TableCell>
               <TableCell align="center">Quantity</TableCell>
-              <TableCell align="right">Product</TableCell>
+              <TableCell align="right">Command</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
