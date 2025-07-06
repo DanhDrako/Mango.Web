@@ -30,7 +30,7 @@ export default function AppSelectInput<T extends FieldValues>(props: Props<T>) {
         onChange={field.onChange}
       >
         {props.items.map((item, index) => (
-          <MenuItem value={item.label} key={item.key || index}>
+          <MenuItem value={item.key} key={index}>
             {item.label}
           </MenuItem>
         ))}

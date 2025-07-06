@@ -62,7 +62,7 @@ export default function ProductForm({
   }, [product, reset, watchFile]);
 
   if (!filters || !filters?.brands || !filters?.categories) {
-    return <div>Loading filters...</div>;
+    return <div>Filters not existing</div>;
   }
 
   const createFormData = (items: FieldValues) => {

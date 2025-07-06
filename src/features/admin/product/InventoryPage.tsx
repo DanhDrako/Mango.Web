@@ -37,6 +37,10 @@ export default function InventoryPage() {
   );
   const [deleteProduct] = useDeleteProductMutation();
 
+  const handleCreateProduct = () => {
+    setSelectedProduct(null);
+    setEditMode(true);
+  };
   const handleSelectProduct = (product: ProductDto) => {
     setSelectedProduct(product);
     setEditMode(true);
@@ -53,12 +57,15 @@ export default function InventoryPage() {
 
   if (
     !data ||
-    !data.response ||
-    data.response.result.length === 0 ||
+    !data.response.isSuccess ||
+    !data.pagination ||
     !filters?.brands ||
     !filters?.categories
-  )
+  ) {
     return <Typography variant="h5">No products available</Typography>;
+  }
+
+  const { response, pagination } = data;
 
   if (editMode)
     return (
@@ -76,7 +83,7 @@ export default function InventoryPage() {
           Inventory Page
         </Typography>
         <Button
-          onClick={() => setEditMode(true)}
+          onClick={handleCreateProduct}
           sx={{ m: 2 }}
           size="large"
           variant="contained"
@@ -98,56 +105,53 @@ export default function InventoryPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data &&
-              data.response.result.map((product) => (
-                <TableRow
-                  key={product.productId}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {product.productId}
-                  </TableCell>
-                  <TableCell align="left">
-                    <Box display="flex" alignItems="center">
-                      <img
-                        src={product.imageUrl}
-                        alt={product.name}
-                        style={{ height: 50, marginRight: 20 }}
-                      />
-                      <span>{product.name}</span>
-                    </Box>
-                  </TableCell>
-                  <TableCell align="right">
-                    {currencyFormat(product.price)}
-                  </TableCell>
-                  <TableCell align="center">
-                    {findCategoryName(filters.categories, product.categoryId)}
-                  </TableCell>
-                  <TableCell align="center">
-                    {findBrandName(filters.brands, product.brandId)}
-                  </TableCell>
-                  <TableCell align="center">
-                    {product.quantityInStock}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Button
-                      onClick={() => handleSelectProduct(product)}
-                      startIcon={<Edit />}
+            {response.result.map((product) => (
+              <TableRow
+                key={product.productId}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {product.productId}
+                </TableCell>
+                <TableCell align="left">
+                  <Box display="flex" alignItems="center">
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      style={{ height: 50, marginRight: 20 }}
                     />
-                    <Button
-                      onClick={() => handleDeleteProduct(product.productId)}
-                      startIcon={<Delete />}
-                      color="error"
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+                    <span>{product.name}</span>
+                  </Box>
+                </TableCell>
+                <TableCell align="right">
+                  {currencyFormat(product.price)}
+                </TableCell>
+                <TableCell align="center">
+                  {findCategoryName(filters.categories, product.categoryId)}
+                </TableCell>
+                <TableCell align="center">
+                  {findBrandName(filters.brands, product.brandId)}
+                </TableCell>
+                <TableCell align="center">{product.quantityInStock}</TableCell>
+                <TableCell align="right">
+                  <Button
+                    onClick={() => handleSelectProduct(product)}
+                    startIcon={<Edit />}
+                  />
+                  <Button
+                    onClick={() => handleDeleteProduct(product.productId)}
+                    startIcon={<Delete />}
+                    color="error"
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
         <Box sx={{ p: 3 }}>
-          {data?.pagination && data.response.result.length > 0 && (
+          {pagination && (
             <AppPagination
-              metadata={data.pagination}
+              metadata={pagination}
               onPageChange={(page: number) => dispatch(setPageNumber(page))}
             />
           )}

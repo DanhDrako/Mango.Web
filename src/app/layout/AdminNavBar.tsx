@@ -1,25 +1,16 @@
 import {
   Button,
-  Divider,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem
 } from '@mui/material';
 import { useState } from 'react';
-import {
-  History,
-  Logout,
-  Redeem,
-  Category,
-  LogoDev
-} from '@mui/icons-material';
-import { useLogoutMutation } from '../../features/auth/authApi';
+import { Redeem, Style } from '@mui/icons-material';
 import { Link } from 'react-router';
 import navStyles from './navStyles';
 
-export default function NavBarMenu() {
-  const [logout] = useLogoutMutation();
+export default function AdminNavBar() {
   // This component renders a user menu with options for profile, orders, and logout.
   // It uses Material-UI components for the menu and icons.
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -56,36 +47,17 @@ export default function NavBarMenu() {
           'aria-labelledby': 'basic-button'
         }}
       >
-        <MenuItem component={Link} to="/categories">
+        <MenuItem component={Link} to="/filters">
           <ListItemIcon>
-            <Category />
+            <Style />
           </ListItemIcon>
-          <ListItemText>Categories</ListItemText>
-        </MenuItem>
-        <MenuItem component={Link} to="/brands">
-          <ListItemIcon>
-            <LogoDev />
-          </ListItemIcon>
-          <ListItemText>Brands</ListItemText>
+          <ListItemText>Filter</ListItemText>
         </MenuItem>
         <MenuItem component={Link} to="/coupons">
           <ListItemIcon>
             <Redeem />
           </ListItemIcon>
           <ListItemText>Coupon</ListItemText>
-        </MenuItem>
-        <MenuItem component={Link} to="/orders">
-          <ListItemIcon>
-            <History />
-          </ListItemIcon>
-          <ListItemText>My orders</ListItemText>
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={logout}>
-          <ListItemIcon>
-            <Logout />
-          </ListItemIcon>
-          <ListItemText>Logout</ListItemText>
         </MenuItem>
       </Menu>
     </div>

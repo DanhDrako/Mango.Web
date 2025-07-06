@@ -18,8 +18,7 @@ import OrderDetailedPage from '../../features/order/OrderDetailedPage';
 import InventoryPage from '../../features/admin/product/InventoryPage';
 import Coupons from '../../features/admin/coupon/CouponsPage';
 import CouponDetailedPage from '../../features/admin/coupon/CouponDetailedPage';
-import Categories from '../../features/admin/category/CategoriesPage';
-import Brands from '../../features/admin/brand/BrandsPage';
+import FilterPage from '../../features/admin/filter/FilterPage';
 
 export const router = createBrowserRouter([
   {
@@ -37,8 +36,7 @@ export const router = createBrowserRouter([
           { path: 'inventory', element: <InventoryPage /> },
           { path: 'coupons', element: <Coupons /> },
           { path: 'coupon/:id', element: <CouponDetailedPage /> },
-          { path: 'categories', element: <Categories /> },
-          { path: 'brands', element: <Brands /> }
+          { path: 'filters', element: <FilterPage /> }
         ]
       },
       { path: '', element: <HomePage /> },

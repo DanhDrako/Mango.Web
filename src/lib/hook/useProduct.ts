@@ -1,17 +1,17 @@
-import { useFetchFiltersQuery } from "../../features/catalog/catalogApi"
+import { useFetchFiltersQuery } from '../../features/admin/filter/filterApi';
 
-export const useProduct= ()=>{
-	const {data} = useFetchFiltersQuery();
+export const useProduct = () => {
+  const { data } = useFetchFiltersQuery();
 
-	if(!data || !data.isSuccess || !data.result) {
-		return {
-			filters: null,
-		}
-	}
+  if (!data || !data.isSuccess || !data.result) {
+    return {
+      filters: null
+    };
+  }
 
-	const { result } = data;
+  const { result } = data;
 
-	return {
-		filters: result,
-	}
-}
+  return {
+    filters: result
+  };
+};

@@ -14,10 +14,11 @@ import { Link, NavLink } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../store/store';
 import { setDarkMode } from './uiSlice';
 import UserMenu from './UserMenu';
-import NavBarMenu from './NavBarMenu';
+import AdminNavBar from './AdminNavBar';
 import navStyles from './navStyles';
 import { useInfo } from '../../lib/hook/useInfo';
 import { useCart } from '../../lib/hook/useCart';
+import SD from '../../common/utils/keys/SD';
 
 const midLinks = [
   { title: 'Catalog', path: '/catalog' },
@@ -65,7 +66,7 @@ export default function NavBar() {
               {title.toUpperCase()}
             </ListItem>
           ))}
-          <NavBarMenu />
+          {userDto && userDto.role === SD.RolesUser.ADMIN && <AdminNavBar />}
         </List>
 
         <Box display="flex" alignItems="center">

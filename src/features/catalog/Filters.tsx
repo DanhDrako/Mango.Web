@@ -9,7 +9,7 @@ import {
   setCategories
 } from './catalogSlice';
 import CheckboxButtons from '../../app/shared/components/CheckboxButtons';
-import type { Filter } from '../../app/models/product/filter';
+import type { Filter } from '../../app/models/product/filter/filter';
 
 const sortOptions = [
   { value: 'name', label: 'Alphabetical' },

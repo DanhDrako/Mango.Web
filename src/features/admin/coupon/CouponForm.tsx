@@ -9,7 +9,7 @@ import {
   createCouponSchema,
   type CreateCouponSchema
 } from '../../../lib/schemas/createCouponSchema';
-import type { Coupon } from '../../../app/models/admin/coupon';
+import type { Coupon } from '../../../app/models/coupon/coupon';
 import { useEffect } from 'react';
 
 type Props = {

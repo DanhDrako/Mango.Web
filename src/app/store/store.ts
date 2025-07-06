@@ -11,8 +11,7 @@ import { checkoutApi } from '../../features/checkout/checkoutApi';
 import { orderApi } from '../../features/order/orderApi';
 import { couponApi } from '../../features/admin/coupon/couponApi';
 import { productApi } from '../../features/admin/product/productApi';
-import { categoryApi } from '../../features/admin/category/categoryApi';
-import { brandApi } from '../../features/admin/brand/brandApi';
+import { filterApi } from '../../features/admin/filter/filterApi';
 
 export const store = configureStore({
   reducer: {
@@ -23,8 +22,7 @@ export const store = configureStore({
     [checkoutApi.reducerPath]: checkoutApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
     [productApi.reducerPath]: productApi.reducer,
-    [categoryApi.reducerPath]: categoryApi.reducer,
-    [brandApi.reducerPath]: brandApi.reducer,
+    [filterApi.reducerPath]: filterApi.reducer,
     [couponApi.reducerPath]: couponApi.reducer,
     counter: counterSlice.reducer,
     ui: uiSlice.reducer,
@@ -40,8 +38,7 @@ export const store = configureStore({
       orderApi.middleware,
       productApi.middleware,
       couponApi.middleware,
-      categoryApi.middleware,
-      brandApi.middleware
+      filterApi.middleware
     )
 });
 

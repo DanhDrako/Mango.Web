@@ -10,17 +10,15 @@ import { useProduct } from '../../lib/hook/useProduct';
 export default function Catalog() {
   const productParams = useAppSelector((state) => state.catalog);
   const { data: product, isLoading } = useFetchProductsQuery(productParams);
-	const {filters} = useProduct();
+  const { filters } = useProduct();
 
   const dispatch = useAppDispatch();
 
-  if (isLoading || !product || !filters)
-    return <div>Loading...</div>;
+  if (isLoading || !product || !filters) return <div>Loading...</div>;
 
-	const { response } = product;
+  const { response } = product;
 
-  if (!response.isSuccess)
-    return <div>Loading...</div>;
+  if (!response.isSuccess) return <div>Loading...</div>;
 
   const { result: listProducts } = response;
 

@@ -11,7 +11,7 @@ import {
   TableContainer
 } from '@mui/material';
 import { useDeleteCouponMutation, useFetchCouponsQuery } from './couponApi';
-import type { Coupon } from '../../../app/models/admin/coupon';
+import type { Coupon } from '../../../app/models/coupon/coupon';
 import { useState } from 'react';
 import CouponForm from './CouponForm';
 import { Delete, Edit } from '@mui/icons-material';

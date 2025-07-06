@@ -6,7 +6,6 @@ import { filterEmptyValues } from '../../lib/util';
 import type { Pagination } from '../../app/models/pagination';
 import Apis from '../../app/api/Apis';
 import type { ResponseDto } from '../../app/models/responseDto';
-import type { Filter } from '../../app/models/product/filter';
 
 export const catalogApi = createApi({
   reducerPath: 'catalogApi',
@@ -32,15 +31,9 @@ export const catalogApi = createApi({
     }),
     fetchProductDetails: build.query<ResponseDto<ProductDto>, number>({
       query: (id) => `${Apis.API_TAILER.PRODUCT}/${id}`
-    }),
-    fetchFilters: build.query<ResponseDto<Filter>, void>({
-      query: () => `${Apis.API_TAILER.PRODUCT}/filters`
     })
   })
 });
 
-export const {
-  useFetchProductsQuery,
-  useFetchProductDetailsQuery,
-  useFetchFiltersQuery
-} = catalogApi;
+export const { useFetchProductsQuery, useFetchProductDetailsQuery } =
+  catalogApi;
