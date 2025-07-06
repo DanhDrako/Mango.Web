@@ -142,7 +142,7 @@ export default function FullFeaturedCrudGrid<T extends GridValidRowModel>({
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',
-      width: 140,
+      flex: 0.2,
       cellClassName: 'actions',
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
