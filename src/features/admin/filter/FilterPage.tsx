@@ -6,6 +6,7 @@ import type {
   Brand,
   Category
 } from '../../../app/models/product/filter/filter';
+import { isRowsEqual } from '../../../lib/util';
 
 export default function FilterPage() {
   const { data: response, isLoading } = useFetchFiltersQuery();
@@ -25,7 +26,6 @@ export default function FilterPage() {
       const {
         result: { categories, brands }
       } = response;
-
       // replace categoryId and brandId with id
       const updatedCategories = categories.map((category) => ({
         ...category,
@@ -46,20 +46,6 @@ export default function FilterPage() {
       setOriginalBrandRows(updatedBrands);
     }
   }, [response]);
-
-  // Helper to compare arrays (shallow compare by id and name)
-  const isRowsEqual = (
-    a: { id: number; name: string }[],
-    b: { id: number; name: string }[]
-  ) => {
-    if (a.length !== b.length) return false;
-    // const sortFn = (x: { id: number }) => x.id;
-    const aSorted = [...a].sort((x, y) => (x.id > y.id ? 1 : -1));
-    const bSorted = [...b].sort((x, y) => (x.id > y.id ? 1 : -1));
-    return aSorted.every(
-      (row, idx) => row.id === bSorted[idx].id && row.name === bSorted[idx].name
-    );
-  };
 
   const isUnchanged =
     isRowsEqual(categoryRows, originalCategoryRows) &&

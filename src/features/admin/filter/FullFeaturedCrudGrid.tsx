@@ -61,7 +61,7 @@ function EditToolbar(props: GridSlotProps['toolbar']) {
           <Typography variant="h6">{title}</Typography>
         </Grid>
         <Grid>
-          <Tooltip title="Add record">
+          <Tooltip title="Add record" color="primary">
             <ToolbarButton onClick={handleClick}>
               <Add fontSize="small" />
               <Typography variant="button" sx={{ ml: 1 }}>

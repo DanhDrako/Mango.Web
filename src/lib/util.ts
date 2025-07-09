@@ -75,3 +75,17 @@ export function findBrandName(
 ): string {
   return brands.find((brand) => brand.brandId === brandId)?.name ?? 'Unknown';
 }
+
+// Helper to compare arrays (shallow compare by id and name)
+export function isRowsEqual(
+  a: { id: number; name: string }[],
+  b: { id: number; name: string }[]
+): boolean {
+  if (a.length !== b.length) return false;
+  // const sortFn = (x: { id: number }) => x.id;
+  const aSorted = [...a].sort((x, y) => (x.id > y.id ? 1 : -1));
+  const bSorted = [...b].sort((x, y) => (x.id > y.id ? 1 : -1));
+  return aSorted.every(
+    (row, idx) => row.id === bSorted[idx].id && row.name === bSorted[idx].name
+  );
+}
