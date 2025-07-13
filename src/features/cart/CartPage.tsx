@@ -1,16 +1,19 @@
-import { Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import CartItem from './CartItem';
 import OrderSummary from '../../app/shared/components/OrderSummary';
 import { useCart } from '../../lib/hook/useCart';
+import { useEmailCartMutation } from './cartApi';
 
 export default function CartPage() {
   const { cart } = useCart();
+  const [emailCart] = useEmailCartMutation();
 
   if (!cart || !cart.cartDetails || cart.cartDetails.length === 0) {
     return <h2>Your cart is empty</h2>;
   }
-
-  // Destructure after guard so TS knows these are defined
+  const handleEmailCart = () => {
+    emailCart(cart);
+  };
 
   return (
     <Grid container spacing={2}>
@@ -21,6 +24,16 @@ export default function CartPage() {
       </Grid>
       <Grid size={4}>
         <OrderSummary />
+        <Button
+          onClick={handleEmailCart}
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2 }}
+        >
+          Email cart
+        </Button>
       </Grid>
     </Grid>
   );

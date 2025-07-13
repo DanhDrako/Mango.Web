@@ -133,6 +133,15 @@ export const cartApi = createApi({
         );
         //Cookies.remove('basketId');
       }
+    }),
+    emailCart: build.mutation<ResponseDto<boolean>, CartHeaderDto>({
+      query: (inputCartDto) => {
+        return {
+          url: Apis.API_TAILER.CART + '/EmailCartRequest',
+          method: Apis.API_TYPE.POST,
+          body: inputCartDto
+        };
+      }
     })
   })
 });
@@ -140,5 +149,6 @@ export const {
   useFetchCartQuery,
   useAddCartItemMutation,
   useRemoveCartItemMutation,
-  useClearCartMutation
+  useClearCartMutation,
+  useEmailCartMutation
 } = cartApi;
