@@ -5,14 +5,29 @@ import { useCart } from '../../lib/hook/useCart';
 import { useEmailCartMutation } from './cartApi';
 
 export default function CartPage() {
-  const { cart } = useCart();
+  const { userDto, cart } = useCart();
   const [emailCart] = useEmailCartMutation();
 
   if (!cart || !cart.cartDetails || cart.cartDetails.length === 0) {
     return <h2>Your cart is empty</h2>;
   }
   const handleEmailCart = () => {
-    emailCart(cart);
+    if (!userDto) {
+      console.error('User information is not available');
+      return;
+    }
+    if (!cart) {
+      console.error('Cart is not available');
+      return;
+    }
+
+    emailCart({
+      ...cart,
+      userId: userDto.id,
+      email: userDto.email,
+      name: userDto.name,
+      phone: userDto.phoneNumber
+    });
   };
 
   return (
