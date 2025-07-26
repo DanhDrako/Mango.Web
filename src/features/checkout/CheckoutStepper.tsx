@@ -31,13 +31,12 @@ import { currencyFormat } from '../../lib/util';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import { LoadingButton } from '@mui/lab';
-import { useCreateOrderMutation } from '../order/orderApi';
+import { useOrder } from '../../lib/hook/useOrder';
+import { OrderStatus } from '../../common/utils/keys/SD';
 
 const steps = ['Shipping Address', 'Payment Method', 'Review Order'];
 export default function CheckoutStepper() {
   const [activeStep, setActiveStep] = useState(0);
-  const [createOrder] = useCreateOrderMutation();
-  // const { cartDto } = useCart();
   const { data, isLoading } = useFetchAddressQuery();
 
   const [updateAddress] = useUpdateAddressMutation();
@@ -47,10 +46,13 @@ export default function CheckoutStepper() {
   const [addressComplete, setAddressComplete] = useState(false);
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const { total, clearBasket } = useCart();
+  const { total, clearCart } = useCart();
   const navigate = useNavigate();
   const [confirmationToken, setConfirmationToken] =
     useState<ConfirmationToken | null>(null);
+  const { result: orderResult, isLoading: isLoadingOrder } = useOrder(
+    OrderStatus.Pending
+  );
 
   let name, restAddress;
   if (data) {
@@ -83,11 +85,14 @@ export default function CheckoutStepper() {
     try {
       if (!confirmationToken) throw new Error('Unable to process payment');
 
-      const orderModel = await createOrderModel();
-      const orderResult = await createOrder(orderModel);
+      if (isLoadingOrder || !orderResult || !orderResult[0]) return;
+
+      const currentOrder =
+        orderResult && orderResult.length > 0 ? orderResult[0] : null;
+      if (!currentOrder) throw new Error('No current order found');
 
       const paymentResult = await stripe?.confirmPayment({
-        clientSecret: '',
+        clientSecret: currentOrder.clientSecret,
         redirect: 'if_required',
         confirmParams: {
           confirmation_token: confirmationToken.id
@@ -96,7 +101,7 @@ export default function CheckoutStepper() {
 
       if (paymentResult?.paymentIntent?.status === 'succeeded') {
         navigate('/checkout/success', { state: orderResult });
-        clearBasket();
+        clearCart();
       } else if (paymentResult?.error) {
         throw new Error(paymentResult.error.message);
       } else {
@@ -113,15 +118,15 @@ export default function CheckoutStepper() {
     }
   };
 
-  const createOrderModel = async () => {
-    const shippingAddress = await getStripeAddress();
-    const paymentSummary = confirmationToken?.payment_method_preview.card;
+  // const createOrderModel = async () => {
+  //   const shippingAddress = await getStripeAddress();
+  //   const paymentSummary = confirmationToken?.payment_method_preview.card;
 
-    if (!shippingAddress || !paymentSummary)
-      throw new Error('Problem creating order');
+  //   if (!shippingAddress || !paymentSummary)
+  //     throw new Error('Problem creating order');
 
-    return { shippingAddress, paymentSummary };
-  };
+  //   return { shippingAddress, paymentSummary };
+  // };
 
   const getStripeAddress = async () => {
     const addressElement = elements?.getElement('address');

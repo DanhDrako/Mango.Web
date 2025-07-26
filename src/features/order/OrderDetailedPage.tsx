@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router';
-import { useFetchOrderDetailsQuery } from './orderApi';
+import { useFetchOrderByOrderIdQuery } from './orderApi';
 import {
   Box,
   Button,
@@ -22,7 +22,13 @@ import {
 export default function OrderDetailedPage() {
   const { id } = useParams();
 
-  const { data: order, isLoading } = useFetchOrderDetailsQuery(+id!);
+  const { data, isLoading } = useFetchOrderByOrderIdQuery(+id!);
+
+  if (!data) return <Typography variant="h5">Order not found</Typography>;
+  if (isLoading)
+    return <Typography variant="h5">Loading order details...</Typography>;
+
+  const { result: order } = data;
 
   if (isLoading)
     return <Typography variant="h5">Loading order details...</Typography>;
@@ -32,7 +38,7 @@ export default function OrderDetailedPage() {
     <Card sx={{ p: 2, maxWidth: 'md', mx: 'auto' }}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="h5" align="center">
-          Order summary for #{order.id}
+          Order summary for #{order.orderHeaderId}
         </Typography>
         <Button component={Link} to="/orders" variant="outlined">
           Back to orders
@@ -72,7 +78,7 @@ export default function OrderDetailedPage() {
             Email address
           </Typography>
           <Typography component="dd" variant="body2" fontWeight="300">
-            {order.buyerEmail}
+            {order.email}
           </Typography>
         </Box>
         <Box component="dl">
@@ -80,7 +86,7 @@ export default function OrderDetailedPage() {
             Order status
           </Typography>
           <Typography component="dd" variant="body2" fontWeight="300">
-            {order.orderStatus}
+            {order.status}
           </Typography>
         </Box>
         <Box component="dl">
@@ -88,7 +94,7 @@ export default function OrderDetailedPage() {
             Order date
           </Typography>
           <Typography component="dd" variant="body2" fontWeight="300">
-            {format(order.orderDate, 'dd MMM yyyy')}
+            {format(order.createdAt, 'dd MMM yyyy')}
           </Typography>
         </Box>
       </Box>
@@ -97,7 +103,7 @@ export default function OrderDetailedPage() {
       <TableContainer>
         <Table>
           <TableBody>
-            {order?.orderItems.map((item) => (
+            {order?.orderDetails.map((item) => (
               <TableRow
                 key={item.productId}
                 sx={{ borderBottom: '1px solid rgba(244, 244, 244, 1)' }}
@@ -105,18 +111,18 @@ export default function OrderDetailedPage() {
                 <TableCell sx={{ py: 4 }}>
                   <Box display="flex" gap={3} alignItems="center">
                     <img
-                      src={item.imageUrl}
-                      alt={item.name}
+                      src={item.product?.imageUrl}
+                      alt={item.product?.name}
                       style={{ width: 40, height: 40 }}
                     />
-                    <Typography>{item.name}</Typography>
+                    <Typography>{item.product?.name}</Typography>
                   </Box>
                 </TableCell>
                 <TableCell align="center" sx={{ p: 4 }}>
-                  x {item.quantity}
+                  x {item?.quantity}
                 </TableCell>
                 <TableCell align="right" sx={{ p: 4 }}>
-                  {currencyFormat(item.price * item.quantity)}
+                  {currencyFormat(item.price * item?.quantity)}
                 </TableCell>
               </TableRow>
             ))}
@@ -130,7 +136,7 @@ export default function OrderDetailedPage() {
             Subtotal
           </Typography>
           <Typography component="dd" variant="body2" fontWeight="300">
-            {currencyFormat(order.subtotal)}
+            {currencyFormat(order.orderTotal)}
           </Typography>
         </Box>
         <Box component="dl" display="flex" justifyContent="space-between">
@@ -160,7 +166,9 @@ export default function OrderDetailedPage() {
           Total
         </Typography>
         <Typography component="dd" variant="body2" fontWeight="700">
-          {currencyFormat(order.total)}
+          {currencyFormat(
+            order.orderTotal + order.deliveryFee - order.discount
+          )}
         </Typography>
       </Box>
     </Card>

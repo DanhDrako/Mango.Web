@@ -17,7 +17,7 @@ import {
 import { Link } from 'react-router';
 import AppSelectInput from '../../app/shared/components/AppSelectInput';
 import type { ResponseDto } from '../../app/models/responseDto';
-import SD from '../../common/utils/keys/SD';
+import { SD } from '../../common/utils/keys/SD';
 
 export default function RegisterForm() {
   const [registerUser] = useRegisterMutation();

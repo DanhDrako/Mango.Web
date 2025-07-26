@@ -1,5 +1,5 @@
 import type { FieldValues, Path, UseFormSetError } from 'react-hook-form';
-import type { PaymentSummary, ShippingAddress } from '../app/models/order';
+import type { PaymentSummary, ShippingAddress } from '../app/models/order/order';
 
 export function currencyFormat(amount: number) {
   return '$' + (amount / 100).toFixed(2);

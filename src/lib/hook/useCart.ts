@@ -12,7 +12,7 @@ export const useCart = () => {
     skip: !userDto?.id // skip if userId is not available yet
   });
 
-  const [clearBasket] = useClearCartMutation();
+  const [clearCart] = useClearCartMutation();
 
   if (!responseCart?.isSuccess || !responseCart?.result)
     return {
@@ -21,7 +21,7 @@ export const useCart = () => {
       subtotal: 0,
       deliveryFee: 0,
       total: 0,
-      clearBasket
+      clearCart
     };
 
   const { result: cart } = responseCart;
@@ -43,6 +43,6 @@ export const useCart = () => {
     subtotal,
     deliveryFee,
     total,
-    clearBasket
+    clearCart
   };
 };

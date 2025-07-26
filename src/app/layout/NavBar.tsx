@@ -18,7 +18,7 @@ import AdminNavBar from './AdminNavBar';
 import navStyles from './navStyles';
 import { useInfo } from '../../lib/hook/useInfo';
 import { useCart } from '../../lib/hook/useCart';
-import SD from '../../common/utils/keys/SD';
+import { SD } from '../../common/utils/keys/SD';
 
 const midLinks = [
   { title: 'Catalog', path: '/catalog' },

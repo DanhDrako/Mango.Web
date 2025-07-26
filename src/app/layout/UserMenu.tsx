@@ -11,7 +11,7 @@ import type { UserDto } from '../models/auth/userDto';
 import { History, Inventory, Logout, Person } from '@mui/icons-material';
 import { useLogoutMutation } from '../../features/auth/authApi';
 import { Link } from 'react-router';
-import SD from '../../common/utils/keys/SD';
+import { SD } from '../../common/utils/keys/SD';
 
 type Props = {
   user: UserDto;

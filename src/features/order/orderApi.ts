@@ -1,24 +1,32 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithErrorHandling } from '../../app/api/baseApi';
-import type { CreateOrder, Order } from '../../app/models/order';
 import Apis from '../../app/api/Apis';
+import type { CartHeaderDto } from '../../app/models/cart/cartHeaderDto';
+import type { ResponseDto } from '../../app/models/responseDto';
+import type { OrderHeaderDto } from '../../app/models/order/order';
 
 export const orderApi = createApi({
   reducerPath: 'orderApi',
-  baseQuery: baseQueryWithErrorHandling(Apis.URL_BASE.MAIN),
+  baseQuery: baseQueryWithErrorHandling(Apis.URL_BASE.ORDER),
   tagTypes: ['Orders'],
   endpoints: (builder) => ({
-    fetchOrders: builder.query<Order[], void>({
-      query: () => 'orders',
+    fetchOrders: builder.query<ResponseDto<OrderHeaderDto[]>, void>({
+      query: () => Apis.API_TAILER.ORDER,
       providesTags: ['Orders']
     }),
-    fetchOrderDetails: builder.query<Order, number>({
-      query: (id) => `orders/${id}`
+    fetchOrderByOrderId: builder.query<ResponseDto<OrderHeaderDto>, number>({
+      query: (id) => `${Apis.API_TAILER.ORDER}/${id}`
     }),
-    createOrder: builder.mutation<Order, CreateOrder>({
+    fetchOrderByUserId: builder.query<
+      ResponseDto<OrderHeaderDto[]>,
+      { id: string; status: number }
+    >({
+      query: ({ id, status }) => `order?status=${status}&userId=${id}`
+    }),
+    createOrder: builder.mutation<ResponseDto<OrderHeaderDto>, CartHeaderDto>({
       query: (order) => ({
-        url: 'orders',
-        method: 'POST',
+        url: Apis.API_TAILER.ORDER,
+        method: Apis.API_TYPE.POST,
         body: order
       }),
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
@@ -30,12 +38,21 @@ export const orderApi = createApi({
           throw error; // Re-throw the error to be handled by the base query error handling
         }
       }
+    }),
+    updateOrder: builder.mutation<ResponseDto<OrderHeaderDto>, OrderHeaderDto>({
+      query: (order) => ({
+        url: Apis.API_TAILER.ORDER,
+        method: Apis.API_TYPE.PUT,
+        body: order
+      })
     })
   })
 });
 
 export const {
   useFetchOrdersQuery,
-  useFetchOrderDetailsQuery,
-  useCreateOrderMutation
+  useFetchOrderByOrderIdQuery,
+  useFetchOrderByUserIdQuery,
+  useCreateOrderMutation,
+  useUpdateOrderMutation
 } = orderApi;

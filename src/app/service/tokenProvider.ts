@@ -1,5 +1,5 @@
-import SD from '../../common/utils/keys/SD';
 import Cookies from 'js-cookie';
+import { SD } from '../../common/utils/keys/SD';
 
 class TokenProvider {
   private constructor() {

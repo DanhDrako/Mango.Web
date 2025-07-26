@@ -14,12 +14,14 @@ import { format } from 'date-fns';
 import { currencyFormat } from '../../lib/util';
 
 export default function OrdersPage() {
-  const { data: orders, isLoading } = useFetchOrdersQuery();
+  const { data, isLoading } = useFetchOrdersQuery();
   const navigate = useNavigate();
 
   if (isLoading) return <Typography variant="h5">Loading orders...</Typography>;
 
-  if (!orders) return <Typography variant="h5">No orders available</Typography>;
+  if (!data) return <Typography variant="h5">No orders available</Typography>;
+
+  const { result: orders } = data;
 
   return (
     <Container maxWidth="md">
@@ -39,15 +41,15 @@ export default function OrdersPage() {
           <TableBody>
             {orders.map((order) => (
               <TableRow
-                key={order.id}
+                key={order.orderHeaderId}
                 hover
-                onClick={() => navigate(`/orders/${order.id}`)}
+                onClick={() => navigate(`/orders/${order.orderHeaderId}`)}
                 style={{ cursor: 'pointer' }}
               >
-                <TableCell align="center">#{order.id}</TableCell>
-                <TableCell>{format(order.orderDate, 'dd MMM yyyy')}</TableCell>
-                <TableCell>{currencyFormat(order.total)}</TableCell>
-                <TableCell>{order.orderStatus}</TableCell>
+                <TableCell align="center">#{order.orderHeaderId}</TableCell>
+                <TableCell>{format(order.createdAt, 'dd MMM yyyy')}</TableCell>
+                <TableCell>{currencyFormat(order.orderTotal)}</TableCell>
+                <TableCell>{order.status}</TableCell>
               </TableRow>
             ))}
           </TableBody>

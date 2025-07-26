@@ -11,7 +11,9 @@ const Apis = {
     COUPON: import.meta.env.VITE_COUPON_API_URL,
     AUTH: import.meta.env.VITE_AUTH_API_URL,
     PRODUCT: import.meta.env.VITE_PRODUCT_API_URL,
-    CART: import.meta.env.VITE_CART_API_URL
+    CART: import.meta.env.VITE_CART_API_URL,
+    ORDER: import.meta.env.VITE_ORDER_API_URL,
+    PAYMENT: import.meta.env.VITE_PAYMENT_API_URL
   },
   API_TAILER: {
     COUPON: '/coupon',
@@ -20,9 +22,8 @@ const Apis = {
     CATEGORY: '/category',
     BRAND: '/brand',
     CART: '/cart',
-    ACCOUNT: '/account',
-    ORDERS: '/orders',
-    PAYMENTS: '/payments',
+    ORDER: '/order',
+    PAYMENT: '/payment',
     BUGGY: '/buggy'
   },
   API_VERSION: {

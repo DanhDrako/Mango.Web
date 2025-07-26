@@ -78,12 +78,12 @@ export const authApi = createApi({
       }
     }),
     fetchAddress: builder.query<Address, void>({
-      query: () => 'account/address'
+      query: () => Apis.API_TAILER.AUTH + '/address'
     }),
     updateAddress: builder.mutation<Address, Address>({
       query: (address) => ({
-        url: 'account/address',
-        method: 'POST',
+        url: Apis.API_TAILER.AUTH + '/address',
+        method: Apis.API_TYPE.POST,
         body: address
       }),
       onQueryStarted: async (address, { dispatch, queryFulfilled }) => {
