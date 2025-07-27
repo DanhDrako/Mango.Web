@@ -3,7 +3,7 @@ import type { CartDetailsDto } from './cartDetailsDto';
 export interface CartHeaderDto {
   cartHeaderId?: number;
   userId: string;
-  cartDetails?: CartDetailsDto[];
+  cartDetails: CartDetailsDto[];
   couponCode: string | null;
   discount: number;
   cartTotal: number;

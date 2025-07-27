@@ -27,7 +27,7 @@ export const useCart = () => {
   const { result: cart } = responseCart;
 
   const subtotal =
-    cart.cartDetails?.reduce(
+    cart.cartDetails.reduce(
       (total: number, item: CartDetailsDto) =>
         item.product ? total + item.product.price * item.quantity : total,
       0

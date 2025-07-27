@@ -14,63 +14,139 @@ import type { OrderHeaderDto } from '../../app/models/order/order';
 import { useCreatePaymentIntentMutation } from './checkoutApi';
 import { useOrder } from '../../lib/hook/useOrder';
 import { OrderStatus } from '../../common/utils/keys/SD';
+import type { CartDetailsDto } from '../../app/models/cart/cartDetailsDto';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PK);
 
+function buildPaymentDto(result: OrderHeaderDto) {
+  return {
+    orderHeaderId: result.orderHeaderId || 0,
+    total: result.orderTotal || 0,
+    paymentIntentId: result.paymentIntentId || '',
+    clientSecret: result.clientSecret || ''
+  };
+}
+
+function mapCartDetailsToOrderDetails(
+  cartDetails: CartDetailsDto[] = [],
+  currentOrder: OrderHeaderDto
+) {
+  return cartDetails.map((item) => ({
+    orderDetailsId:
+      currentOrder.orderDetails.find((x) => x.productId === item.productId)
+        ?.orderDetailsId || 0,
+    orderHeaderId: currentOrder.orderHeaderId,
+    productId: item.productId,
+    product: null,
+    quantity: item.quantity,
+    productName: item.product?.name || '',
+    price: item.product?.price || 0
+  }));
+}
+
+async function updateOrderWithPaymentIntent(
+  order: OrderHeaderDto,
+  createPaymentIntent: ReturnType<typeof useCreatePaymentIntentMutation>[0],
+  setResponseOrder: (order: OrderHeaderDto) => void
+) {
+  const paymentDto = buildPaymentDto(order);
+  const paymentResult = await createPaymentIntent(paymentDto).unwrap();
+  const { result: paymentResultData } = paymentResult;
+
+  if (!paymentResultData) return;
+
+  const updatedResult = {
+    ...order,
+    clientSecret: paymentResultData.clientSecret,
+    paymentIntentId: paymentResultData.paymentIntentId
+  };
+
+  setResponseOrder(updatedResult);
+}
+
 export default function CheckoutPage() {
-  const { cart } = useCart();
-  const { result: order, isLoading } = useOrder(OrderStatus.Pending);
+  const { cart, subtotal } = useCart();
+  const { result: order, isLoading: isLoadingOrder } = useOrder(
+    OrderStatus.Pending
+  );
   const { darkMode } = useAppSelector((state) => state.ui);
 
   const [createPaymentIntent] = useCreatePaymentIntentMutation();
   const [createOrder] = useCreateOrderMutation();
   const [updateOrder] = useUpdateOrderMutation();
-  const [responseOrder, setResponseOrder] = useState<OrderHeaderDto>();
-  // const created = useRef(false);
-
-  function buildPaymentDto(result: OrderHeaderDto) {
-    return {
-      orderHeaderId: result.orderHeaderId || 0,
-      total: result.orderTotal || 0,
-      paymentIntentId: result.paymentIntentId || '',
-      clientSecret: result.clientSecret || ''
-    };
-  }
+  const [responseOrder, setResponseOrder] = useState<OrderHeaderDto | null>(
+    null
+  );
 
   useEffect(() => {
-    // If the order is not created yet, create a new order
-    // If the order is already created, update the existing order
-    if (isLoading || !cart) return;
+    if (isLoadingOrder || !cart) return;
 
-    const currentOrder = order && order.length > 0 ? order[0] : null;
-    if (currentOrder && currentOrder.orderHeaderId) {
-      // Update order details with cart items
-      // order.orderDetails = cart.cartDetails ?? [];
-      updateOrder(currentOrder)
+    const cartDetails = cart.cartDetails ?? [];
+    const currentOrder =
+      Array.isArray(order) && order.length > 0 ? order[0] : null;
+    setResponseOrder(currentOrder);
+
+    // Create new order if none exists
+    if (!currentOrder) {
+      const cartForOrder = { ...cart, cartTotal: subtotal };
+      createOrder(cartForOrder)
         .unwrap()
-        .then((data) => {
-          setResponseOrder(data.result);
-          const paymentDto = buildPaymentDto(data.result);
-          return createPaymentIntent(paymentDto).unwrap();
+        .then(async (data) => {
+          if (!data) return;
+          const { result } = data;
+          await updateOrderWithPaymentIntent(
+            result,
+            createPaymentIntent,
+            setResponseOrder
+          );
         });
-    } else {
-      createOrder(cart)
-        .unwrap()
-        .then((data) => {
-          if (!data) {
-            return;
-          }
-          setResponseOrder(data.result);
-          const paymentDto = buildPaymentDto(data.result);
-          return createPaymentIntent(paymentDto).unwrap();
-        });
+      return;
     }
 
-    // created.current = true;
-  }, [isLoading, createOrder, createPaymentIntent, updateOrder, cart, order]);
+    // Check if order details match cart details
+    if (currentOrder.orderDetails.length === cartDetails.length) {
+      const isSameDetails = currentOrder.orderDetails.every((detail, index) => {
+        const cartDetail = cartDetails[index];
+        return (
+          cartDetail &&
+          detail.productId === cartDetail.productId &&
+          detail.quantity === cartDetail.quantity
+        );
+      });
+      if (isSameDetails) return;
+    }
+
+    // Map and update order if details differ
+    const updatedOrder: OrderHeaderDto = {
+      ...currentOrder,
+      orderDetails: mapCartDetailsToOrderDetails(cartDetails, currentOrder),
+      orderTotal: subtotal,
+      clientSecret: currentOrder.clientSecret || '',
+      paymentIntentId: currentOrder.paymentIntentId || ''
+    };
+
+    updateOrder(updatedOrder)
+      .unwrap()
+      .then(async (data) => {
+        const { result } = data;
+        await updateOrderWithPaymentIntent(
+          result,
+          createPaymentIntent,
+          setResponseOrder
+        );
+      });
+  }, [
+    isLoadingOrder,
+    createOrder,
+    createPaymentIntent,
+    updateOrder,
+    cart,
+    subtotal,
+    order
+  ]);
 
   const options: StripeElementsOptions | undefined = useMemo(() => {
-    if (isLoading || !responseOrder || !responseOrder.clientSecret) return;
+    if (isLoadingOrder || !responseOrder || !responseOrder.clientSecret) return;
     return {
       clientSecret: responseOrder.clientSecret,
       appearance: {
@@ -78,7 +154,7 @@ export default function CheckoutPage() {
         theme: darkMode ? 'night' : 'stripe'
       }
     };
-  }, [isLoading, responseOrder, darkMode]);
+  }, [isLoadingOrder, responseOrder, darkMode]);
 
   return (
     <Grid container spacing={2}>

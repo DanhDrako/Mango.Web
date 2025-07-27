@@ -10,7 +10,7 @@ export interface OrderHeaderDto {
   phone: string | null;
   email: string | null;
   deliveryFee: number;
-  status: string | null;
+  status: number;
   paymentIntentId: string | null;
   clientSecret: string;
   shippingAddress: ShippingAddress;
