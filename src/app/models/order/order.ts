@@ -2,7 +2,7 @@ import type { ProductDto } from '../product/productDto';
 
 export interface OrderHeaderDto {
   orderHeaderId: number;
-  userId: string | null;
+  userId: string;
   couponCode: string | null;
   discount: number;
   orderTotal: number;

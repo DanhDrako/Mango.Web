@@ -3,7 +3,7 @@ import OrderSummary from '../../app/shared/components/OrderSummary';
 import CheckoutStepper from './CheckoutStepper';
 import { loadStripe, type StripeElementsOptions } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '../../app/store/store';
 import { useCart } from '../../lib/hook/useCart';
 import {
@@ -20,6 +20,7 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PK);
 
 function buildPaymentDto(result: OrderHeaderDto) {
   return {
+    userId: result.userId || '',
     orderHeaderId: result.orderHeaderId || 0,
     total: result.orderTotal || 0,
     paymentIntentId: result.paymentIntentId || '',
@@ -44,26 +45,6 @@ function mapCartDetailsToOrderDetails(
   }));
 }
 
-async function updateOrderWithPaymentIntent(
-  order: OrderHeaderDto,
-  createPaymentIntent: ReturnType<typeof useCreatePaymentIntentMutation>[0],
-  setResponseOrder: (order: OrderHeaderDto) => void
-) {
-  const paymentDto = buildPaymentDto(order);
-  const paymentResult = await createPaymentIntent(paymentDto).unwrap();
-  const { result: paymentResultData } = paymentResult;
-
-  if (!paymentResultData) return;
-
-  const updatedResult = {
-    ...order,
-    clientSecret: paymentResultData.clientSecret,
-    paymentIntentId: paymentResultData.paymentIntentId
-  };
-
-  setResponseOrder(updatedResult);
-}
-
 export default function CheckoutPage() {
   const { cart, subtotal } = useCart();
   const { result: order, isLoading: isLoadingOrder } = useOrder(
@@ -78,7 +59,10 @@ export default function CheckoutPage() {
     null
   );
 
-  useEffect(() => {
+  const state = useRef(false);
+
+  // Use useCallback to memoize the function
+  const handleOrderUpdate = useCallback(async () => {
     if (isLoadingOrder || !cart) return;
 
     const cartDetails = cart.cartDetails ?? [];
@@ -86,20 +70,21 @@ export default function CheckoutPage() {
       Array.isArray(order) && order.length > 0 ? order[0] : null;
     setResponseOrder(currentOrder);
 
+    if (state.current) return;
+    state.current = true;
+
     // Create new order if none exists
     if (!currentOrder) {
-      const cartForOrder = { ...cart, cartTotal: subtotal };
-      createOrder(cartForOrder)
-        .unwrap()
-        .then(async (data) => {
-          if (!data) return;
-          const { result } = data;
-          await updateOrderWithPaymentIntent(
-            result,
-            createPaymentIntent,
-            setResponseOrder
-          );
-        });
+      try {
+        const cartForOrder = { ...cart, cartTotal: subtotal };
+        const response = await createOrder(cartForOrder).unwrap();
+        if (!response) return;
+
+        const paymentDto = buildPaymentDto(response.result);
+        createPaymentIntent(paymentDto);
+      } catch (error) {
+        console.error('Failed to create order:', error);
+      }
       return;
     }
 
@@ -120,30 +105,31 @@ export default function CheckoutPage() {
     const updatedOrder: OrderHeaderDto = {
       ...currentOrder,
       orderDetails: mapCartDetailsToOrderDetails(cartDetails, currentOrder),
-      orderTotal: subtotal,
-      clientSecret: currentOrder.clientSecret || '',
-      paymentIntentId: currentOrder.paymentIntentId || ''
+      orderTotal: subtotal
     };
 
-    updateOrder(updatedOrder)
-      .unwrap()
-      .then(async (data) => {
-        const { result } = data;
-        await updateOrderWithPaymentIntent(
-          result,
-          createPaymentIntent,
-          setResponseOrder
-        );
-      });
+    try {
+      const response = await updateOrder(updatedOrder).unwrap();
+      if (!response) return;
+      const paymentDto = buildPaymentDto(response.result);
+      createPaymentIntent(paymentDto);
+    } catch (error) {
+      console.error('Failed to update order:', error);
+    }
   }, [
-    isLoadingOrder,
-    createOrder,
-    createPaymentIntent,
-    updateOrder,
     cart,
     subtotal,
-    order
+    isLoadingOrder,
+    order,
+    createPaymentIntent,
+    createOrder,
+    updateOrder
   ]);
+
+  useEffect(() => {
+    // Call the handleOrderUpdate function when the component mounts or dependencies change
+    handleOrderUpdate();
+  }, [handleOrderUpdate]);
 
   const options: StripeElementsOptions | undefined = useMemo(() => {
     if (isLoadingOrder || !responseOrder || !responseOrder.clientSecret) return;

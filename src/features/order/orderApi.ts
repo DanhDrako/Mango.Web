@@ -19,7 +19,7 @@ export const orderApi = createApi({
     }),
     fetchOrderByUserId: builder.query<
       ResponseDto<OrderHeaderDto[]>,
-      { id: string; status: number }
+      { id: string; status?: number }
     >({
       query: ({ id, status }) => `order?status=${status}&userId=${id}`
     }),
@@ -31,20 +31,50 @@ export const orderApi = createApi({
       }),
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
-          await queryFulfilled;
-          dispatch(orderApi.util.invalidateTags(['Orders'])); // Invalidate orders cache after creating a new order
+          const { data } = await queryFulfilled;
+          dispatch(
+            orderApi.util.updateQueryData(
+              'fetchOrderByUserId',
+              { id: data.result.userId, status: data.result.status },
+              (draft) => {
+                draft.result.push(data.result);
+              }
+            )
+          );
         } catch (error) {
-          console.log(error);
-          throw error; // Re-throw the error to be handled by the base query error handling
+          console.log('Order creation failed', error);
         }
-      }
+      },
+      invalidatesTags: ['Orders']
     }),
     updateOrder: builder.mutation<ResponseDto<OrderHeaderDto>, OrderHeaderDto>({
       query: (order) => ({
         url: Apis.API_TAILER.ORDER,
         method: Apis.API_TYPE.PUT,
         body: order
-      })
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            orderApi.util.updateQueryData(
+              'fetchOrderByUserId',
+              { id: data.result.userId, status: data.result.status },
+              (draft) => {
+                const index = draft.result.findIndex(
+                  (o) => o.orderHeaderId === data.result.orderHeaderId
+                );
+                if (index !== -1) {
+                  draft.result[index] = data.result;
+                }
+              }
+            )
+          );
+        } catch (error) {
+          console.log('Order update failed', error);
+        }
+      },
+      invalidatesTags: ['Orders']
     })
   })
 });
