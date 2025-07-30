@@ -59,18 +59,23 @@ export default function CheckoutPage() {
     null
   );
 
+  // Use a ref to track if the order has been updated
   const state = useRef(false);
 
   // Use useCallback to memoize the function
   const handleOrderUpdate = useCallback(async () => {
+    // wait for order and cart to be available
     if (isLoadingOrder || !cart) return;
 
+    // Set cart details and current order
     const cartDetails = cart.cartDetails ?? [];
     const currentOrder =
       Array.isArray(order) && order.length > 0 ? order[0] : null;
     setResponseOrder(currentOrder);
 
+    // Prevent multiple updates in quick succession
     if (state.current) return;
+    // Set state to true to prevent further updates
     state.current = true;
 
     // Create new order if none exists
@@ -80,6 +85,7 @@ export default function CheckoutPage() {
         const response = await createOrder(cartForOrder).unwrap();
         if (!response) return;
 
+        // Build payment DTO and create payment intent for new order
         const paymentDto = buildPaymentDto(response.result);
         createPaymentIntent(paymentDto);
       } catch (error) {
@@ -111,6 +117,7 @@ export default function CheckoutPage() {
     try {
       const response = await updateOrder(updatedOrder).unwrap();
       if (!response) return;
+      // Build payment DTO and updating payment intent for updated order
       const paymentDto = buildPaymentDto(response.result);
       createPaymentIntent(paymentDto);
     } catch (error) {
