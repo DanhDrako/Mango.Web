@@ -77,10 +77,10 @@ export const authApi = createApi({
         router.navigate('/');
       }
     }),
-    fetchAddress: builder.query<Address, void>({
+    fetchAddress: builder.query<ResponseDto<Address>, void>({
       query: () => Apis.API_TAILER.AUTH + '/address'
     }),
-    updateAddress: builder.mutation<Address, Address>({
+    updateAddress: builder.mutation<ResponseDto<Address>, Address>({
       query: (address) => ({
         url: Apis.API_TAILER.AUTH + '/address',
         method: Apis.API_TYPE.POST,

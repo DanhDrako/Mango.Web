@@ -33,6 +33,8 @@ import { useNavigate } from 'react-router';
 import { LoadingButton } from '@mui/lab';
 import { useOrder } from '../../lib/hook/useOrder';
 import { OrderStatus } from '../../common/utils/keys/SD';
+import type { Address } from '../../app/models/auth/userDto';
+import { useUpdateOrderMutation } from '../order/orderApi';
 
 const steps = ['Shipping Address', 'Payment Method', 'Review Order'];
 export default function CheckoutStepper() {
@@ -40,6 +42,8 @@ export default function CheckoutStepper() {
   const { data, isLoading } = useFetchAddressQuery();
 
   const [updateAddress] = useUpdateAddressMutation();
+  const [updateOrder] = useUpdateOrderMutation();
+
   const [saveAddressChecked, setSaveAddressChecked] = useState(false);
   const elements = useElements();
   const stripe = useStripe();
@@ -55,8 +59,8 @@ export default function CheckoutStepper() {
   );
 
   let name, restAddress;
-  if (data) {
-    ({ name, ...restAddress } = data);
+  if (!isLoading && data?.isSuccess) {
+    ({ name, ...restAddress } = (data.result as Address) || {});
   }
 
   const handleNext = async () => {
@@ -91,6 +95,12 @@ export default function CheckoutStepper() {
         orderResult && orderResult.length > 0 ? orderResult[0] : null;
       if (!currentOrder) throw new Error('No current order found');
 
+      const orderModel = await updateOrderModel();
+      const orderUpdateResult = await updateOrder({
+        ...currentOrder,
+        ...orderModel
+      }).unwrap();
+
       const paymentResult = await stripe?.confirmPayment({
         clientSecret: currentOrder.clientSecret,
         redirect: 'if_required',
@@ -100,7 +110,7 @@ export default function CheckoutStepper() {
       });
 
       if (paymentResult?.paymentIntent?.status === 'succeeded') {
-        navigate('/checkout/success', { state: orderResult });
+        navigate('/checkout/success', { state: orderUpdateResult.result });
         clearCart();
       } else if (paymentResult?.error) {
         throw new Error(paymentResult.error.message);
@@ -118,15 +128,15 @@ export default function CheckoutStepper() {
     }
   };
 
-  // const createOrderModel = async () => {
-  //   const shippingAddress = await getStripeAddress();
-  //   const paymentSummary = confirmationToken?.payment_method_preview.card;
+  const updateOrderModel = async () => {
+    const shippingAddress = await getStripeAddress();
+    const paymentSummary = confirmationToken?.payment_method_preview.card;
 
-  //   if (!shippingAddress || !paymentSummary)
-  //     throw new Error('Problem creating order');
+    if (!shippingAddress || !paymentSummary)
+      throw new Error('Problem creating order');
 
-  //   return { shippingAddress, paymentSummary };
-  // };
+    return { shippingAddress, paymentSummary };
+  };
 
   const getStripeAddress = async () => {
     const addressElement = elements?.getElement('address');

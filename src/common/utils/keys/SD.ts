@@ -17,3 +17,15 @@ export const OrderStatus = {
   Cancelled: 7,
   Refunded: 8
 };
+
+export const OrderStatusText = {
+  [OrderStatus.Pending]: 'Pending',
+  [OrderStatus.PaymentLater]: 'Payment Later',
+  [OrderStatus.PaymentReceived]: 'Payment Received',
+  [OrderStatus.PaymentFailed]: 'Payment Failed',
+  [OrderStatus.PaymentMismatch]: 'Payment Mismatch',
+  [OrderStatus.Shipped]: 'Shipped',
+  [OrderStatus.Delivered]: 'Delivered',
+  [OrderStatus.Cancelled]: 'Cancelled',
+  [OrderStatus.Refunded]: 'Refunded'
+};

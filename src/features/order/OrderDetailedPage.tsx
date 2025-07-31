@@ -18,6 +18,7 @@ import {
   formatAddressString,
   formatPaymentString
 } from '../../lib/util';
+import { OrderStatusText } from '../../common/utils/keys/SD';
 
 export default function OrderDetailedPage() {
   const { id } = useParams();
@@ -86,7 +87,7 @@ export default function OrderDetailedPage() {
             Order status
           </Typography>
           <Typography component="dd" variant="body2" fontWeight="300">
-            {order.status}
+            {OrderStatusText[order.status]}
           </Typography>
         </Box>
         <Box component="dl">
@@ -94,7 +95,7 @@ export default function OrderDetailedPage() {
             Order date
           </Typography>
           <Typography component="dd" variant="body2" fontWeight="300">
-            {format(order.createdAt, 'dd MMM yyyy')}
+            {format(order.updatedAt, 'dd MMM yyyy')}
           </Typography>
         </Box>
       </Box>

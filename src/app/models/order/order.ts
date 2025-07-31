@@ -17,6 +17,7 @@ export interface OrderHeaderDto {
   paymentSummary: PaymentSummary;
   orderDetails: OrderDetailsDto[];
   createdAt: string;
+  updatedAt: string;
 }
 export interface OrderDetailsDto {
   orderDetailsId: number;

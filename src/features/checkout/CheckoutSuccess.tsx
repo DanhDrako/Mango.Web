@@ -7,13 +7,17 @@ import {
   Typography
 } from '@mui/material';
 import { Link, useLocation } from 'react-router';
-import { currencyFormat } from '../../lib/util';
+import {
+  currencyFormat,
+  formatAddressString,
+  formatPaymentString
+} from '../../lib/util';
 import { format } from 'date-fns';
 import type { OrderHeaderDto } from '../../app/models/order/order';
 
 export default function CheckoutSuccess() {
   const { state } = useLocation();
-  const order = state.data as OrderHeaderDto;
+  const order = state as OrderHeaderDto;
 
   if (!order) return <Typography variant="h5">No order found</Typography>;
 
@@ -42,26 +46,32 @@ export default function CheckoutSuccess() {
             <Typography variant="body2" color="textSecondary">
               Order date
             </Typography>
-            <Typography variant="body2" fontWeight="bold">
-              {format(order.createdAt, 'dd MMM yyyy')}
-            </Typography>
+            {order.updatedAt ? (
+              <Typography variant="body2" fontWeight="bold">
+                {format(order.updatedAt, 'dd MMM yyyy')}
+              </Typography>
+            ) : (
+              <Typography variant="body2" color="textSecondary">
+                N/A
+              </Typography>
+            )}
           </Box>
           <Divider />
           <Box display="flex" justifyContent="space-between">
             <Typography variant="body2" color="textSecondary">
               Payment method
             </Typography>
-            {/* <Typography variant="body2" fontWeight="bold">
+            <Typography variant="body2" fontWeight="bold">
               {formatPaymentString(order.paymentSummary)}
-            </Typography> */}
+            </Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="body2" color="textSecondary">
               Shipping address
             </Typography>
-            {/* <Typography variant="body2" fontWeight="bold">
+            <Typography variant="body2" fontWeight="bold">
               {formatAddressString(order.shippingAddress)}
-            </Typography> */}
+            </Typography>
           </Box>
           <Divider />
           <Box display="flex" justifyContent="space-between">

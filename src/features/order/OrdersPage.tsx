@@ -12,6 +12,7 @@ import { useFetchOrdersQuery } from './orderApi';
 import { useNavigate } from 'react-router';
 import { format } from 'date-fns';
 import { currencyFormat } from '../../lib/util';
+import { OrderStatusText } from '../../common/utils/keys/SD';
 
 export default function OrdersPage() {
   const { data, isLoading } = useFetchOrdersQuery();
@@ -47,9 +48,9 @@ export default function OrdersPage() {
                 style={{ cursor: 'pointer' }}
               >
                 <TableCell align="center">#{order.orderHeaderId}</TableCell>
-                <TableCell>{format(order.createdAt, 'dd MMM yyyy')}</TableCell>
+                <TableCell>{format(order.updatedAt, 'dd MMM yyyy')}</TableCell>
                 <TableCell>{currencyFormat(order.orderTotal)}</TableCell>
-                <TableCell>{order.status}</TableCell>
+                <TableCell>{OrderStatusText[order.status]}</TableCell>
               </TableRow>
             ))}
           </TableBody>

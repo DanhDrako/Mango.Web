@@ -96,8 +96,10 @@ export default function CheckoutPage() {
 
     // Check if order details match cart details
     if (currentOrder.orderDetails.length === cartDetails.length) {
-      const isSameDetails = currentOrder.orderDetails.every((detail, index) => {
-        const cartDetail = cartDetails[index];
+      const isSameDetails = currentOrder.orderDetails.every((detail) => {
+        const cartDetail = cartDetails.find(
+          (item) => item.productId === detail.productId
+        );
         return (
           cartDetail &&
           detail.productId === cartDetail.productId &&
