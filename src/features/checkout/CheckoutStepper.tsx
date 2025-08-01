@@ -35,6 +35,8 @@ import { useOrder } from '../../lib/hook/useOrder';
 import { OrderStatus } from '../../common/utils/keys/SD';
 import type { Address } from '../../app/models/auth/userDto';
 import { useUpdateOrderMutation } from '../order/orderApi';
+import { useRemoveCartItemsMutation } from '../cart/cartApi';
+import type { ListItemsDto } from '../../app/models/cart/inputCartDto';
 
 const steps = ['Shipping Address', 'Payment Method', 'Review Order'];
 export default function CheckoutStepper() {
@@ -43,6 +45,7 @@ export default function CheckoutStepper() {
 
   const [updateAddress] = useUpdateAddressMutation();
   const [updateOrder] = useUpdateOrderMutation();
+  const [clearCartItems] = useRemoveCartItemsMutation();
 
   const [saveAddressChecked, setSaveAddressChecked] = useState(false);
   const elements = useElements();
@@ -50,7 +53,7 @@ export default function CheckoutStepper() {
   const [addressComplete, setAddressComplete] = useState(false);
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const { total, clearCart } = useCart();
+  const { total } = useCart();
   const navigate = useNavigate();
   const [confirmationToken, setConfirmationToken] =
     useState<ConfirmationToken | null>(null);
@@ -95,12 +98,6 @@ export default function CheckoutStepper() {
         orderResult && orderResult.length > 0 ? orderResult[0] : null;
       if (!currentOrder) throw new Error('No current order found');
 
-      const orderModel = await updateOrderModel();
-      const orderUpdateResult = await updateOrder({
-        ...currentOrder,
-        ...orderModel
-      }).unwrap();
-
       const paymentResult = await stripe?.confirmPayment({
         clientSecret: currentOrder.clientSecret,
         redirect: 'if_required',
@@ -108,11 +105,43 @@ export default function CheckoutStepper() {
           confirmation_token: confirmationToken.id
         }
       });
-
+      const addingModel = await addedOrderModel();
+      const clonedObject = { ...currentOrder };
       if (paymentResult?.paymentIntent?.status === 'succeeded') {
-        navigate('/checkout/success', { state: orderUpdateResult.result });
-        clearCart();
+        if (
+          clonedObject.orderTotal + clonedObject.deliveryFee !==
+          paymentResult.paymentIntent.amount
+        ) {
+          // Payment mismatch - treat as failure
+          clonedObject.status = OrderStatus.PaymentMismatch;
+          await updateOrder({ ...clonedObject, ...addingModel });
+
+          // Don't clear cart or navigate to success - throw error instead
+          throw new Error(
+            'Payment amount mismatch detected. Please contact support.'
+          );
+        } else {
+          // Payment successful and amounts match
+          clonedObject.status = OrderStatus.PaymentReceived;
+          clonedObject.orderTime = new Date();
+
+          const orderUpdateResult = await updateOrder({
+            ...clonedObject,
+            ...addingModel
+          }).unwrap();
+
+          navigate('/checkout/success', { state: orderUpdateResult.result });
+          // remove cart items after successful order update
+
+          const listItemsDto: ListItemsDto = {
+            userId: clonedObject.userId,
+            items: clonedObject.orderDetails.map((x) => x.productId)
+          };
+          clearCartItems(listItemsDto);
+        }
       } else if (paymentResult?.error) {
+        clonedObject.status = OrderStatus.PaymentFailed;
+        await updateOrder({ ...clonedObject, ...addingModel });
         throw new Error(paymentResult.error.message);
       } else {
         throw new Error('Something went wrong with the payment');
@@ -128,7 +157,7 @@ export default function CheckoutStepper() {
     }
   };
 
-  const updateOrderModel = async () => {
+  const addedOrderModel = async () => {
     const shippingAddress = await getStripeAddress();
     const paymentSummary = confirmationToken?.payment_method_preview.card;
 

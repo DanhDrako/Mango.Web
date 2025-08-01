@@ -33,8 +33,8 @@ export default function CartPage() {
   return (
     <Grid container spacing={2}>
       <Grid size={8}>
-        {cart.cartDetails.map((item) => (
-          <CartItem userId={cart.userId} item={item} key={item.cartDetailsId} />
+        {cart.cartDetails.map((item, index) => (
+          <CartItem userId={cart.userId} item={item} key={index} />
         ))}
       </Grid>
       <Grid size={4}>

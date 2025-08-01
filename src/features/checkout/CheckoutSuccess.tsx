@@ -46,15 +46,9 @@ export default function CheckoutSuccess() {
             <Typography variant="body2" color="textSecondary">
               Order date
             </Typography>
-            {order.updatedAt ? (
-              <Typography variant="body2" fontWeight="bold">
-                {format(order.updatedAt, 'dd MMM yyyy')}
-              </Typography>
-            ) : (
-              <Typography variant="body2" color="textSecondary">
-                N/A
-              </Typography>
-            )}
+            <Typography variant="body2" fontWeight="bold">
+              {format(order.orderTime, 'dd MMM yyyy')}
+            </Typography>
           </Box>
           <Divider />
           <Box display="flex" justifyContent="space-between">

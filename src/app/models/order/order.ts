@@ -15,6 +15,7 @@ export interface OrderHeaderDto {
   clientSecret: string;
   shippingAddress: ShippingAddress;
   paymentSummary: PaymentSummary;
+  orderTime: Date;
   orderDetails: OrderDetailsDto[];
   createdAt: string;
   updatedAt: string;

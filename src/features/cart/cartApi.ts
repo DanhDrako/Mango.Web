@@ -2,7 +2,10 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithErrorHandling } from '../../app/api/baseApi';
 import Apis from '../../app/api/Apis';
 import type { ResponseDto } from '../../app/models/responseDto';
-import type { InputCartDto } from '../../app/models/cart/inputCartDto';
+import type {
+  InputCartDto,
+  ListItemsDto
+} from '../../app/models/cart/inputCartDto';
 import type { CartHeaderDto } from '../../app/models/cart/cartHeaderDto';
 
 // function isCartItem(
@@ -118,20 +121,25 @@ export const cartApi = createApi({
         }
       }
     }),
-    clearCart: build.mutation<void, void>({
-      queryFn: () => ({ data: undefined }),
-      onQueryStarted: async (_, { dispatch }) => {
-        // You must provide a userId string as the second argument instead of undefined.
-        // For example, if you have access to the userId in this scope, use it here:
-        // Replace 'userId' with the actual user id variable you have available.
-        const userId = ''; // TODO: Replace with actual user id
+    removeCartItems: build.mutation<boolean, ListItemsDto>({
+      query: (listItemsDto) => ({
+        url: `${Apis.API_TAILER.CART}/RemoveItems`,
+        method: Apis.API_TYPE.DELETE,
+        body: listItemsDto
+      }),
+      onQueryStarted: async (listItemsDto, { dispatch }) => {
         dispatch(
-          cartApi.util.updateQueryData('fetchCart', userId, (draft) => {
-            // draft.items = [];
-            draft.result.cartDetails = [];
-          })
+          cartApi.util.updateQueryData(
+            'fetchCart',
+            listItemsDto.userId,
+            (draft) => {
+              // Filter out items that are in the listItemsDto
+              draft.result.cartDetails = draft.result.cartDetails?.filter(
+                (item) => !listItemsDto.items.includes(item.productId)
+              );
+            }
+          )
         );
-        //Cookies.remove('basketId');
       }
     }),
     emailCart: build.mutation<ResponseDto<boolean>, CartHeaderDto>({
@@ -149,6 +157,6 @@ export const {
   useFetchCartQuery,
   useAddCartItemMutation,
   useRemoveCartItemMutation,
-  useClearCartMutation,
+  useRemoveCartItemsMutation,
   useEmailCartMutation
 } = cartApi;

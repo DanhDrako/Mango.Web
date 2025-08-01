@@ -15,6 +15,7 @@ import { useCreatePaymentIntentMutation } from './checkoutApi';
 import { useOrder } from '../../lib/hook/useOrder';
 import { OrderStatus } from '../../common/utils/keys/SD';
 import type { CartDetailsDto } from '../../app/models/cart/cartDetailsDto';
+import { useInfo } from '../../lib/hook/useInfo';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PK);
 
@@ -46,6 +47,7 @@ function mapCartDetailsToOrderDetails(
 }
 
 export default function CheckoutPage() {
+  const { userDto } = useInfo();
   const { cart, subtotal } = useCart();
   const { result: order, isLoading: isLoadingOrder } = useOrder(
     OrderStatus.Pending
@@ -65,7 +67,7 @@ export default function CheckoutPage() {
   // Use useCallback to memoize the function
   const handleOrderUpdate = useCallback(async () => {
     // wait for order and cart to be available
-    if (isLoadingOrder || !cart) return;
+    if (isLoadingOrder || !cart || !userDto) return;
 
     // Set cart details and current order
     const cartDetails = cart.cartDetails ?? [];
@@ -81,7 +83,13 @@ export default function CheckoutPage() {
     // Create new order if none exists
     if (!currentOrder) {
       try {
-        const cartForOrder = { ...cart, cartTotal: subtotal };
+        const cartForOrder = {
+          ...cart,
+          email: userDto.email || '',
+          name: userDto.name || '',
+          phone: userDto.phoneNumber || '',
+          cartTotal: subtotal
+        };
         const response = await createOrder(cartForOrder).unwrap();
         if (!response) return;
 
@@ -126,12 +134,13 @@ export default function CheckoutPage() {
       console.error('Failed to update order:', error);
     }
   }, [
-    cart,
-    subtotal,
     isLoadingOrder,
+    cart,
+    userDto,
     order,
-    createPaymentIntent,
+    subtotal,
     createOrder,
+    createPaymentIntent,
     updateOrder
   ]);
 

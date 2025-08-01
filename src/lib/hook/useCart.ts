@@ -1,8 +1,5 @@
 import type { CartDetailsDto } from '../../app/models/cart/cartDetailsDto';
-import {
-  useClearCartMutation,
-  useFetchCartQuery
-} from '../../features/cart/cartApi';
+import { useFetchCartQuery } from '../../features/cart/cartApi';
 import { useInfo } from './useInfo';
 
 export const useCart = () => {
@@ -12,16 +9,13 @@ export const useCart = () => {
     skip: !userDto?.id // skip if userId is not available yet
   });
 
-  const [clearCart] = useClearCartMutation();
-
   if (!responseCart?.isSuccess || !responseCart?.result)
     return {
       cart: null,
       userDto: userDto,
       subtotal: 0,
       deliveryFee: 0,
-      total: 0,
-      clearCart
+      total: 0
     };
 
   const { result: cart } = responseCart;
@@ -42,7 +36,6 @@ export const useCart = () => {
     userDto,
     subtotal,
     deliveryFee,
-    total,
-    clearCart
+    total
   };
 };

@@ -10,8 +10,8 @@ export const orderApi = createApi({
   baseQuery: baseQueryWithErrorHandling(Apis.URL_BASE.ORDER),
   tagTypes: ['Orders'],
   endpoints: (builder) => ({
-    fetchOrders: builder.query<ResponseDto<OrderHeaderDto[]>, void>({
-      query: () => Apis.API_TAILER.ORDER,
+    fetchOrders: builder.query<ResponseDto<OrderHeaderDto[]>, string>({
+      query: (userId) => `${Apis.API_TAILER.ORDER}?userId=${userId}`,
       providesTags: ['Orders']
     }),
     fetchOrderByOrderId: builder.query<ResponseDto<OrderHeaderDto>, number>({

@@ -95,7 +95,7 @@ export default function OrderDetailedPage() {
             Order date
           </Typography>
           <Typography component="dd" variant="body2" fontWeight="300">
-            {format(order.updatedAt, 'dd MMM yyyy')}
+            {format(order.orderTime, 'dd MMM yyyy')}
           </Typography>
         </Box>
       </Box>

@@ -5,3 +5,8 @@ export interface InputCartDto {
   product: ProductDto;
   quantity: number;
 }
+
+export interface ListItemsDto {
+  userId: string;
+  items: number[];
+}

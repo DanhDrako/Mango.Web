@@ -13,10 +13,18 @@ import { useNavigate } from 'react-router';
 import { format } from 'date-fns';
 import { currencyFormat } from '../../lib/util';
 import { OrderStatusText } from '../../common/utils/keys/SD';
+import { useInfo } from '../../lib/hook/useInfo';
 
 export default function OrdersPage() {
-  const { data, isLoading } = useFetchOrdersQuery();
   const navigate = useNavigate();
+
+  const { userDto } = useInfo();
+  const { data, isLoading } = useFetchOrdersQuery(userDto?.id || '');
+  if (!userDto) {
+    return (
+      <Typography variant="h5">Please log in to view your orders</Typography>
+    );
+  }
 
   if (isLoading) return <Typography variant="h5">Loading orders...</Typography>;
 
@@ -48,7 +56,7 @@ export default function OrdersPage() {
                 style={{ cursor: 'pointer' }}
               >
                 <TableCell align="center">#{order.orderHeaderId}</TableCell>
-                <TableCell>{format(order.updatedAt, 'dd MMM yyyy')}</TableCell>
+                <TableCell>{format(order.orderTime, 'dd MMM yyyy')}</TableCell>
                 <TableCell>{currencyFormat(order.orderTotal)}</TableCell>
                 <TableCell>{OrderStatusText[order.status]}</TableCell>
               </TableRow>
