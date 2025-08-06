@@ -105,43 +105,23 @@ export default function CheckoutStepper() {
           confirmation_token: confirmationToken.id
         }
       });
+
       const addingModel = await addedOrderModel();
-      const clonedObject = { ...currentOrder };
+      const orderUpdateResult = await updateOrder({
+        ...currentOrder,
+        ...addingModel
+      }).unwrap();
+
       if (paymentResult?.paymentIntent?.status === 'succeeded') {
-        if (
-          clonedObject.orderTotal + clonedObject.deliveryFee !==
-          paymentResult.paymentIntent.amount
-        ) {
-          // Payment mismatch - treat as failure
-          clonedObject.status = OrderStatus.PaymentMismatch;
-          await updateOrder({ ...clonedObject, ...addingModel });
+        navigate('/checkout/success', { state: orderUpdateResult.result });
 
-          // Don't clear cart or navigate to success - throw error instead
-          throw new Error(
-            'Payment amount mismatch detected. Please contact support.'
-          );
-        } else {
-          // Payment successful and amounts match
-          clonedObject.status = OrderStatus.PaymentReceived;
-          clonedObject.orderTime = new Date();
-
-          const orderUpdateResult = await updateOrder({
-            ...clonedObject,
-            ...addingModel
-          }).unwrap();
-
-          navigate('/checkout/success', { state: orderUpdateResult.result });
-          // remove cart items after successful order update
-
-          const listItemsDto: ListItemsDto = {
-            userId: clonedObject.userId,
-            items: clonedObject.orderDetails.map((x) => x.productId)
-          };
-          clearCartItems(listItemsDto);
-        }
+        // remove cart items after successful order update
+        const listItemsDto: ListItemsDto = {
+          userId: currentOrder.userId,
+          items: currentOrder.orderDetails.map((x) => x.productId)
+        };
+        clearCartItems(listItemsDto);
       } else if (paymentResult?.error) {
-        clonedObject.status = OrderStatus.PaymentFailed;
-        await updateOrder({ ...clonedObject, ...addingModel });
         throw new Error(paymentResult.error.message);
       } else {
         throw new Error('Something went wrong with the payment');

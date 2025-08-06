@@ -121,11 +121,10 @@ export const cartApi = createApi({
         }
       }
     }),
+    // remove cart items by product IDs, does not call API directly
     removeCartItems: build.mutation<boolean, ListItemsDto>({
-      query: (listItemsDto) => ({
-        url: `${Apis.API_TAILER.CART}/RemoveItems`,
-        method: Apis.API_TYPE.DELETE,
-        body: listItemsDto
+      queryFn: () => ({
+        data: true // No API call, just a local update
       }),
       onQueryStarted: async (listItemsDto, { dispatch }) => {
         dispatch(
