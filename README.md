@@ -24,4 +24,5 @@
 -- npm i jwt-decode
 -- npm i --save @stripe/react-stripe-js @stripe/stripe-js
 -- brew i stripe/stripe-cli/stripe
+-- stripe listen -f https://localhost:7005/api/payment/webhook -e payment_intent.succeeded,payment_intent.failed
 ```
